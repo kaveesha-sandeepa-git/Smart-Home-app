@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Smart Home</string>
+
+    <!-- Navigation -->
+    <string name="nav_dashboard">Dashboard</string>
+    <string name="nav_floors">Floors</string>
+    <string name="nav_reports">Reports</string>
+    <string name="nav_settings">Settings</string>
+
+    <!-- Dashboard -->
+    <string name="dashboard_title">Smart Home Dashboard</string>
+    <string name="select_floor">Select Floor</string>
+    <string name="devices">Devices</string>
+    <string name="devices_on">Devices ON</string>
+    <string name="total_devices">Total Devices</string>
+
+    <!-- Device Control -->
+    <string name="power_control">Power Control</string>
+    <string name="turn_on">Turn ON</string>
+    <string name="turn_off">Turn OFF</string>
+    <string name="brightness">Brightness</string>
+    <string name="scheduling">Auto Schedule</string>
+    <string name="max_duration">Max ON Duration</string>
+    <string name="individual_switches">Individual Switches</string>
+    <string name="usage_statistics">Usage Statistics</string>
+
+    <!-- Reporting -->
+    <string name="total_on_time">Total ON Time</string>
+    <string name="toggles_today">Toggles Today</string>
+    <string name="energy_used">Energy Used</string>
+
+    <!-- Status -->
+    <string name="status_on">ON</string>
+    <string name="status_off">OFF</string>
+    <string name="status_error">ERROR</string>
+    <string name="status_disconnected">DISCONNECTED</string>
+
+    <!-- Settings -->
+    <string name="settings_title">Settings</string>
+    <string name="firebase_connection">Firebase Connection</string>
+    <string name="firebase_connected">Connected</string>
+    <string name="enable_notifications">Enable Notifications</string>
+    <string name="safety_alerts">Safety Alerts</string>
+    <string name="about">About</string>
+    <string name="app_version">App Version</string>
+    <string name="build_date">Build Date</string>
+    <string name="build_year">2026</string>
+</resources>
