@@ -69,52 +69,53 @@ class DashboardFragment : Fragment() {
     private fun setupObservers() {
         // Observe floors to populate spinner
         viewModel.floors.observe(viewLifecycleOwner) { floorList ->
-            floors = floorList
-            val floorNames = floors.map { it.name }
-            val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, floorNames)
-            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-            floorSpinner.adapter = adapter
-            
-            if (floors.isNotEmpty()) {
-                viewModel.selectFloor(floors[0].floorId)
+            floorList?.let {
+                floors = it
+                val floorNames = floors.map { f -> f.name }
+                val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, floorNames)
+                adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+                floorSpinner.adapter = adapter
+                
+                if (floors.isNotEmpty()) {
+                    viewModel.selectFloor(floors[0].floorId)
+                }
+                AppLogger.d(TAG, "Floors loaded: ${floors.size}")
             }
-            AppLogger.d(TAG, "Floors loaded: ${floors.size}")
         }
 
         // Observe devices for current floor
         viewModel.currentFloorDevices.observe(viewLifecycleOwner) { deviceList ->
-            deviceAdapter.updateDevices(deviceList)
-            updateStats(deviceList)
-            AppLogger.d(TAG, "Devices loaded for floor: ${deviceList.size}")
+            deviceList?.let {
+                deviceAdapter.updateDevices(it)
+                AppLogger.d(TAG, "Devices loaded for floor: ${it.size}")
+            }
         }
 
-        // Observe all devices to get total count if needed, but currentFloorDevices updateStats might be enough for current view
+        // Observe all devices to get total count
         viewModel.allDevices.observe(viewLifecycleOwner) { allDevices ->
-            totalDevicesCount.text = allDevices.size.toString()
+            allDevices?.let {
+                totalDevicesCount.text = it.size.toString()
+            }
         }
 
         // Observe active device count
         viewModel.activeDevicesCount.observe(viewLifecycleOwner) { count ->
-            devicesOnCount.text = count.toString()
+            devicesOnCount.text = (count ?: 0).toString()
         }
 
         // Observe errors
         viewModel.getRepositoryError().observe(viewLifecycleOwner) { error ->
-            error?.let {
-                if (it.isNotEmpty()) {
-                    AppLogger.w(TAG, "Error: $it")
-                    Toast.makeText(requireContext(), it, Toast.LENGTH_SHORT).show()
-                }
+            if (!error.isNullOrEmpty()) {
+                AppLogger.w(TAG, "Error: $error")
+                Toast.makeText(requireContext(), error, Toast.LENGTH_SHORT).show()
             }
         }
 
         // Observe success messages
         viewModel.getRepositorySuccess().observe(viewLifecycleOwner) { message ->
-            message?.let {
-                if (it.isNotEmpty()) {
-                    AppLogger.i(TAG, "Success: $it")
-                    Toast.makeText(requireContext(), it, Toast.LENGTH_SHORT).show()
-                }
+            if (!message.isNullOrEmpty()) {
+                AppLogger.i(TAG, "Success: $message")
+                Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
             }
         }
     }
@@ -136,10 +137,6 @@ class DashboardFragment : Fragment() {
     private fun toggleDevice(device: Device) {
         AppLogger.d(TAG, "Toggling device: ${device.name}")
         viewModel.toggleDevice(device)
-    }
-
-    private fun updateStats(devices: List<Device>) {
-        // totalDevicesCount is updated by observing allDevices
     }
 
     override fun onDestroyView() {

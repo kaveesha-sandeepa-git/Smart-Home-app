@@ -14,9 +14,16 @@ import kotlinx.coroutines.*
 
 class FirebaseSyncService(context: Context) {
 
-    private val database: FirebaseDatabase = FirebaseDatabase.getInstance()
-    private val floorsRef: DatabaseReference = database.getReference(FLOORS_PATH)
-    private val devicesRef: DatabaseReference = database.getReference(DEVICES_PATH)
+    private val database: FirebaseDatabase by lazy {
+        // Fallback to project ID based URL if default instance fails
+        try {
+            FirebaseDatabase.getInstance()
+        } catch (e: Exception) {
+            FirebaseDatabase.getInstance("https://smart-home-app-eaeaa-default-rtdb.firebaseio.com/")
+        }
+    }
+    private val floorsRef: DatabaseReference by lazy { database.getReference(FLOORS_PATH) }
+    private val devicesRef: DatabaseReference by lazy { database.getReference(DEVICES_PATH) }
     private val deviceDao: DeviceDao
     private val floorDao: FloorDao
     private val syncStatus = MutableLiveData(false)

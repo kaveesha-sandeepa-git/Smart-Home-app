@@ -15,7 +15,8 @@ import com.example.smart_home.models.*
         Light::class,
         Iron::class,
         Outlet::class,
-        SecurityCamera::class
+        SecurityCamera::class,
+        MultiSwitch::class
     ],
     version = 1,
     exportSchema = false
