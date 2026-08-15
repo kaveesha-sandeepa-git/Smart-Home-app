@@ -21,7 +21,7 @@ class DeviceControlActivity : AppCompatActivity() {
     private lateinit var btnTurnOn: Button
     private lateinit var btnTurnOff: Button
     private lateinit var btnSetDuration: Button
-    private lateinit var schedulingToggle: Switch
+    private lateinit var schedulingToggle: androidx.appcompat.widget.SwitchCompat
     private lateinit var brightnessSlider: SeekBar
     private lateinit var brightnessValue: TextView
     private lateinit var maxDurationInput: EditText
@@ -44,7 +44,7 @@ class DeviceControlActivity : AppCompatActivity() {
         deviceIcon = findViewById(R.id.device_icon)
         deviceName = findViewById(R.id.device_name)
         deviceType = findViewById(R.id.device_type)
-        currentStatus = findViewById(R.id.current_status)
+        currentStatus = findViewById(R.id.device_status)
         btnTurnOn = findViewById(R.id.btn_turn_on)
         btnTurnOff = findViewById(R.id.btn_turn_off)
         brightnessSlider = findViewById(R.id.brightness_slider)

@@ -14,6 +14,8 @@
     <string name="devices">Devices</string>
     <string name="devices_on">Devices ON</string>
     <string name="total_devices">Total Devices</string>
+    <string name="details">Details</string>
+    <string name="status_indicator">Status indicator</string>
 
     <!-- Device Control -->
     <string name="power_control">Power Control</string>

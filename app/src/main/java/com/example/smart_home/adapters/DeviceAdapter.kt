@@ -34,35 +34,39 @@ class DeviceAdapter(
     override fun getItemCount(): Int = devices.size
 
     class DeviceViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+        private val cardRoot: View = view.findViewById(R.id.device_card_root)
         private val icon: ImageView = view.findViewById(R.id.device_icon)
         private val name: TextView = view.findViewById(R.id.device_name)
         private val type: TextView = view.findViewById(R.id.device_type)
         private val status: TextView = view.findViewById(R.id.device_status)
-        private val indicator: ImageView = view.findViewById(R.id.status_indicator)
-        private val toggleBtn: Button = view.findViewById(R.id.btn_toggle)
-        private val detailsBtn: Button = view.findViewById(R.id.btn_details)
+        private val toggleSwitch: androidx.appcompat.widget.SwitchCompat = view.findViewById(R.id.btn_toggle)
 
         fun bind(device: Device, listener: (Device) -> Unit) {
             name.text = device.name
             type.text = device.type
-            setDeviceStatus(device.status)
 
             // Set icon based on device type
             setDeviceIcon(device.type)
 
-            // Set status indicator color
-            setStatusIndicator(device.status)
+            // Set status pill text and background
+            setStatusBadge(device.status)
 
-            // Handle toggle button
-            toggleBtn.setOnClickListener {
-                device.toggleStatus()
-                setDeviceStatus(device.status)
-                setStatusIndicator(device.status)
-                listener(device)
+            // Set toggle switch state
+            // temporarily remove listener to prevent it from firing during bind
+            toggleSwitch.setOnCheckedChangeListener(null)
+            toggleSwitch.isChecked = device.status == "ON"
+            toggleSwitch.isEnabled = device.status != "DISCONNECTED" && device.status != "ERROR"
+
+            // Handle toggle switch
+            toggleSwitch.setOnCheckedChangeListener { _, isChecked ->
+                val newStatus = if (isChecked) "ON" else "OFF"
+                device.status = newStatus
+                setStatusBadge(newStatus)
+                listener(device) // Just pass the device back, or maybe toggle isn't meant to open details
             }
 
-            // Handle details button
-            detailsBtn.setOnClickListener {
+            // Handle details button (now the whole card)
+            cardRoot.setOnClickListener {
                 listener(device)
             }
         }
@@ -77,22 +81,31 @@ class DeviceAdapter(
                 else -> R.drawable.ic_device
             }
             icon.setImageResource(iconRes)
-        }
-
-        private fun setStatusIndicator(status: String) {
-            val colorRes = when (status) {
-                "ON" -> R.color.status_on
-                "OFF" -> R.color.status_off
-                "ERROR" -> R.color.status_error
-                else -> R.color.status_disconnected
+            
+            // Set the background color based on the type, matching the HTML prototype
+            val bgRes = when (type) {
+                "LIGHT" -> R.drawable.icon_badge_light_bg
+                "OUTLET" -> R.drawable.icon_badge_outlet_bg
+                "IRON" -> R.drawable.icon_badge_iron_bg
+                "CAMERA" -> R.drawable.icon_badge_camera_bg
+                "MULTI_SWITCH" -> R.drawable.icon_badge_switch_bg
+                else -> R.drawable.icon_badge_light_bg
             }
-            val color = itemView.context.getColor(colorRes)
-            indicator.setImageResource(android.R.drawable.presence_online)
-            indicator.imageTintList = ColorStateList.valueOf(color)
+            icon.setBackgroundResource(bgRes)
         }
 
-        private fun setDeviceStatus(statusText: String) {
-            status.text = "Status: $statusText"
+        private fun setStatusBadge(statusText: String) {
+            status.text = statusText
+            
+            val (colorRes, bgRes) = when (statusText) {
+                "ON" -> Pair(R.color.status_on, R.drawable.status_chip_on_bg)
+                "OFF" -> Pair(R.color.status_off, R.drawable.status_chip_off_bg)
+                "ERROR" -> Pair(R.color.status_error, R.drawable.status_chip_error_bg)
+                else -> Pair(R.color.status_disconnected, R.drawable.status_chip_disc_bg) // DISCONNECTED
+            }
+            
+            status.setTextColor(itemView.context.getColor(colorRes))
+            status.setBackgroundResource(bgRes)
         }
     }
 }

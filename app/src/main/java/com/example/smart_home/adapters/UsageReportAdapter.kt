@@ -25,10 +25,10 @@ class UsageReportAdapter(
     override fun getItemCount(): Int = reports.size
 
     class ReportViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        private val deviceName: TextView = view.findViewById(R.id.report_device_name)
-        private val totalOnTime: TextView = view.findViewById(R.id.total_on_time_report)
-        private val toggles: TextView = view.findViewById(R.id.toggles_report)
-        private val energyUsed: TextView = view.findViewById(R.id.energy_used_report)
+        private val deviceName: TextView = view.findViewById(R.id.device_name)
+        private val totalOnTime: TextView = view.findViewById(R.id.stat_total_on)
+        private val toggles: TextView = view.findViewById(R.id.stat_toggles)
+        private val energyUsed: TextView = view.findViewById(R.id.stat_energy)
 
         fun bind(report: DeviceUsageReport) {
             deviceName.text = report.deviceName
