@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/bg">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <!-- Floor Selector Card -->
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="14dp"
+            android:layout_marginEnd="14dp"
+            android:layout_marginTop="14dp"
+            app:cardCornerRadius="8dp"
+            app:cardElevation="2dp"
+            app:cardBackgroundColor="@color/card">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:padding="12dp"
+                android:gravity="center_vertical">
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="FLOOR"
+                        android:textSize="10sp"
+                        android:textColor="@color/ink_soft"
+                        android:letterSpacing="0.06"
+                        android:textStyle="bold" />
+
+                    <Spinner
+                        android:id="@+id/floor_spinner"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textSize="14sp"
+                        android:paddingTop="2dp" />
+
+                </LinearLayout>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="▾"
+                    android:textColor="@color/primary"
+                    android:textSize="16sp" />
+
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+
+        <!-- Filter Buttons Row -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="14dp"
+            android:gravity="center">
+
+            <Button
+                android:id="@+id/btn_today"
+                android:layout_width="0dp"
+                android:layout_height="38dp"
+                android:layout_weight="1"
+                android:layout_marginEnd="4dp"
+                android:text="Today"
+                android:textSize="11sp"
+                android:textStyle="bold"
+                android:textColor="@color/btn_filter_text_selector"
+                android:background="@drawable/btn_filter_selector"
+                android:stateListAnimator="@null" />
+
+            <Button
+                android:id="@+id/btn_week"
+                android:layout_width="0dp"
+                android:layout_height="38dp"
+                android:layout_weight="1"
+                android:layout_marginStart="4dp"
+                android:layout_marginEnd="4dp"
+                android:text="This Week"
+                android:textSize="11sp"
+                android:textStyle="bold"
+                android:textColor="@color/btn_filter_text_selector"
+                android:background="@drawable/btn_filter_selector"
+                android:stateListAnimator="@null" />
+
+            <Button
+                android:id="@+id/btn_month"
+                android:layout_width="0dp"
+                android:layout_height="38dp"
+                android:layout_weight="1"
+                android:layout_marginStart="4dp"
+                android:text="This Month"
+                android:textSize="11sp"
+                android:textStyle="bold"
+                android:textColor="@color/btn_filter_text_selector"
+                android:background="@drawable/btn_filter_selector"
+                android:stateListAnimator="@null" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/reports_list"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingStart="14dp"
+        android:paddingEnd="14dp"
+        android:clipToPadding="false" />
+
+</LinearLayout>
