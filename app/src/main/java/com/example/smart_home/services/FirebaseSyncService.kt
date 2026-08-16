@@ -9,6 +9,7 @@ import com.example.smart_home.database.DeviceDao
 import com.example.smart_home.database.FloorDao
 import com.example.smart_home.models.Device
 import com.example.smart_home.models.Floor
+import com.example.smart_home.utils.PreferencesManager
 import com.google.firebase.database.*
 import kotlinx.coroutines.*
 
@@ -17,10 +18,13 @@ class FirebaseSyncService(context: Context) {
     private val database: FirebaseDatabase = FirebaseDatabase.getInstance()
     private val floorsRef: DatabaseReference = database.getReference(FLOORS_PATH)
     private val devicesRef: DatabaseReference = database.getReference(DEVICES_PATH)
+    private val connectedRef: DatabaseReference = database.getReference(".info/connected")
     private val deviceDao: DeviceDao
     private val floorDao: FloorDao
+    private val preferencesManager: PreferencesManager = PreferencesManager.getInstance(context)
     private val syncStatus = MutableLiveData(false)
     private val syncError = MutableLiveData<String>()
+    private val lastSyncTime = MutableLiveData<Long>()
     
     private val serviceScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
 
@@ -28,6 +32,15 @@ class FirebaseSyncService(context: Context) {
         val db = AppDatabase.getInstance(context)
         deviceDao = db.deviceDao()
         floorDao = db.floorDao()
+        lastSyncTime.postValue(preferencesManager.lastSyncTime)
+    }
+
+    private fun recordSyncSuccess() {
+        val now = System.currentTimeMillis()
+        preferencesManager.lastSyncTime = now
+        preferencesManager.isConnected = true
+        lastSyncTime.postValue(now)
+        syncStatus.postValue(true)
     }
 
     // ============= FLOORS SYNC =============
@@ -44,10 +57,13 @@ class FirebaseSyncService(context: Context) {
                     }
                 }
                 insertFloorsToDatabase(floors)
+                recordSyncSuccess()
                 Log.d(TAG, "Synced ${floors.size} floors from Firebase")
             }
 
             override fun onCancelled(error: DatabaseError) {
+                syncStatus.postValue(false)
+                preferencesManager.isConnected = false
                 syncError.postValue("Failed to sync floors: ${error.message}")
                 Log.e(TAG, "Failed to sync floors", error.toException())
             }
@@ -65,11 +81,12 @@ class FirebaseSyncService(context: Context) {
                     }
                 }
                 insertFloorsToDatabase(floors)
-                syncStatus.postValue(true)
+                recordSyncSuccess()
             }
 
             override fun onCancelled(error: DatabaseError) {
                 syncStatus.postValue(false)
+                preferencesManager.isConnected = false
                 syncError.postValue("Floors listener failed: ${error.message}")
             }
         })
@@ -121,10 +138,13 @@ class FirebaseSyncService(context: Context) {
                     }
                 }
                 insertDevicesToDatabase(devices)
+                recordSyncSuccess()
                 Log.d(TAG, "Synced ${devices.size} devices from Firebase")
             }
 
             override fun onCancelled(error: DatabaseError) {
+                syncStatus.postValue(false)
+                preferencesManager.isConnected = false
                 syncError.postValue("Failed to sync devices: ${error.message}")
                 Log.e(TAG, "Failed to sync devices", error.toException())
             }
@@ -142,11 +162,12 @@ class FirebaseSyncService(context: Context) {
                     }
                 }
                 insertDevicesToDatabase(devices)
-                syncStatus.postValue(true)
+                recordSyncSuccess()
             }
 
             override fun onCancelled(error: DatabaseError) {
                 syncStatus.postValue(false)
+                preferencesManager.isConnected = false
                 syncError.postValue("Devices listener failed: ${error.message}")
             }
         })
@@ -255,6 +276,33 @@ class FirebaseSyncService(context: Context) {
     fun getSyncStatus(): LiveData<Boolean> = syncStatus
 
     fun getSyncError(): LiveData<String> = syncError
+
+    fun getLastSyncTime(): LiveData<Long> = lastSyncTime
+
+    fun refreshSync() {
+        connectedRef.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val connected = snapshot.getValue(Boolean::class.java) ?: false
+                syncStatus.postValue(connected)
+                preferencesManager.isConnected = connected
+
+                if (connected) {
+                    syncFloorsFromFirebase()
+                    syncDevicesFromFirebase()
+                    Log.d(TAG, "Firebase connectivity refresh: connected")
+                } else {
+                    Log.w(TAG, "Firebase connectivity refresh: disconnected")
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                syncStatus.postValue(false)
+                preferencesManager.isConnected = false
+                syncError.postValue("Connectivity check failed: ${error.message}")
+                Log.e(TAG, "Connectivity check failed", error.toException())
+            }
+        })
+    }
 
     fun startSync() {
         syncFloorsFromFirebase()

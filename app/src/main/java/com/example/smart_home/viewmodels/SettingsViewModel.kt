@@ -14,7 +14,12 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
     private val repository: SmartHomeRepository = SmartHomeRepository.getInstance(application)
     
     val syncStatus: LiveData<Boolean> = repository.getSyncStatus()
+    val lastSyncTime: LiveData<Long> = repository.getLastSyncTime()
     val safetyAlerts: LiveData<String?> = repository.getSafetyAlerts()
+
+    fun refreshFirebaseConnectivity() {
+        repository.refreshFirebaseSync()
+    }
 
     // ============= GETTERS =============
 

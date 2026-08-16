@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageButton
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.widget.SwitchCompat
@@ -32,6 +33,7 @@ class SettingsFragment : Fragment() {
     private lateinit var darkModeToggle: SwitchCompat
     private lateinit var firebaseStatus: TextView
     private lateinit var lastSyncTime: TextView
+    private lateinit var refreshFirebaseButton: ImageButton
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -60,6 +62,7 @@ class SettingsFragment : Fragment() {
         darkModeToggle = view.findViewById(R.id.dark_mode_toggle)
         firebaseStatus = view.findViewById(R.id.firebase_status)
         lastSyncTime = view.findViewById(R.id.last_sync_time)
+        refreshFirebaseButton = view.findViewById(R.id.refresh_firebase_button)
 
         // Set app version (reads from BuildConfig)
         view.findViewById<TextView>(R.id.tv_app_version)?.text = BuildConfig.VERSION_NAME
@@ -73,11 +76,14 @@ class SettingsFragment : Fragment() {
         autoSyncToggle.isChecked = preferencesManager.autoSyncEnabled
         darkModeToggle.isChecked = preferencesManager.darkModeEnabled
 
-        val lastSync = preferencesManager.lastSyncTime
-        if (lastSync > 0) {
-            lastSyncTime.text = formatTimestamp(lastSync)
+        updateLastSyncDisplay(preferencesManager.lastSyncTime)
+    }
+
+    private fun updateLastSyncDisplay(timestamp: Long) {
+        lastSyncTime.text = if (timestamp > 0) {
+            formatTimestamp(timestamp)
         } else {
-            lastSyncTime.text = "Never synced"
+            getString(R.string.never_synced)
         }
     }
 
@@ -85,13 +91,17 @@ class SettingsFragment : Fragment() {
         viewModel.syncStatus.observe(viewLifecycleOwner) { isConnected ->
             isConnected?.let {
                 if (it) {
-                    firebaseStatus.text = "● Connected"
+                    firebaseStatus.text = getString(R.string.firebase_status_connected)
                     firebaseStatus.setTextColor(resources.getColor(R.color.status_on, null))
                 } else {
-                    firebaseStatus.text = "● Disconnected"
+                    firebaseStatus.text = getString(R.string.firebase_status_disconnected)
                     firebaseStatus.setTextColor(resources.getColor(R.color.status_disconnected, null))
                 }
             }
+        }
+
+        viewModel.lastSyncTime.observe(viewLifecycleOwner) { timestamp ->
+            timestamp?.let { updateLastSyncDisplay(it) }
         }
 
         viewModel.safetyAlerts.observe(viewLifecycleOwner) { alert ->
@@ -103,6 +113,17 @@ class SettingsFragment : Fragment() {
     }
 
     private fun setupListeners() {
+        refreshFirebaseButton.setOnClickListener {
+            refreshFirebaseButton.isEnabled = false
+            viewModel.refreshFirebaseConnectivity()
+            android.widget.Toast.makeText(
+                requireContext(),
+                getString(R.string.checking_firebase_connection),
+                android.widget.Toast.LENGTH_SHORT
+            ).show()
+            refreshFirebaseButton.postDelayed({ refreshFirebaseButton.isEnabled = true }, 1500)
+        }
+
         notificationsToggle.setOnCheckedChangeListener { _, isChecked ->
             preferencesManager.notificationsEnabled = isChecked
         }

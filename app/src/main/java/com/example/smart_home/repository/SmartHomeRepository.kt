@@ -326,6 +326,10 @@ class SmartHomeRepository private constructor(context: Context) {
 
     fun getSyncStatus(): LiveData<Boolean> = firebaseService.getSyncStatus()
 
+    fun getLastSyncTime(): LiveData<Long> = firebaseService.getLastSyncTime()
+
+    fun refreshFirebaseSync() = firebaseService.refreshSync()
+
     fun getSafetyAlerts(): LiveData<String?> = safetyService.getSafetyAlerts()
 
     fun getScheduleEvents(): LiveData<String?> = schedulingService.getScheduleEvents()

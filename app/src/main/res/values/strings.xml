@@ -42,6 +42,11 @@
     <string name="settings_title">Settings</string>
     <string name="firebase_connection">Firebase Connection</string>
     <string name="firebase_connected">Connected</string>
+    <string name="firebase_status_connected">● Connected</string>
+    <string name="firebase_status_disconnected">● Disconnected</string>
+    <string name="refresh_firebase_connection">Refresh Firebase connection</string>
+    <string name="checking_firebase_connection">Checking Firebase connection…</string>
+    <string name="never_synced">Never synced</string>
     <string name="enable_notifications">Enable Notifications</string>
     <string name="safety_alerts">Safety Alerts</string>
     <string name="about">About</string>
