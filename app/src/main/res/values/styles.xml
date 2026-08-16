@@ -1,19 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <style name="Theme.SmartHome" parent="Theme.MaterialComponents.Light.NoActionBar">
+    <!-- Main app theme — Material 2 Light, no action bar (we use custom Toolbar) -->
+    <style name="Theme.SmartHome" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <item name="colorPrimary">@color/primary</item>
         <item name="colorPrimaryVariant">@color/primary_dark</item>
         <item name="colorSecondary">@color/secondary</item>
         <item name="colorSecondaryVariant">@color/secondary</item>
         <item name="colorError">@color/danger</item>
-        <item name="android:colorBackground">@color/background_primary</item>
-        <item name="android:textColorPrimary">@color/text_primary</item>
-        <item name="android:textColorSecondary">@color/text_secondary</item>
+        <item name="android:colorBackground">@color/bg</item>
+        <item name="android:textColorPrimary">@color/ink</item>
+        <item name="android:textColorSecondary">@color/ink_soft</item>
+        <!-- Material component defaults -->
+        <item name="colorSurface">@color/card</item>
+        <item name="colorOnSurface">@color/ink</item>
+        <!-- Switch thumb/track tint -->
+        <item name="switchStyle">@style/Widget.SmartHome.Switch</item>
     </style>
 
-    <style name="CardView.Light" parent="@style/CardView">
-        <item name="cardBackgroundColor">@color/background_secondary</item>
+    <!-- Card style -->
+    <style name="Widget.SmartHome.Card" parent="@style/CardView">
+        <item name="cardBackgroundColor">@color/card</item>
         <item name="cardElevation">2dp</item>
         <item name="cardCornerRadius">8dp</item>
+    </style>
+
+    <!-- Custom Switch matching prototype green -->
+    <style name="Widget.SmartHome.Switch" parent="@style/Widget.MaterialComponents.CompoundButton.Switch">
+        <item name="thumbTint">@color/white</item>
+        <item name="trackTint">@color/switch_track_selector</item>
+    </style>
+
+    <!-- Login/Signup screen theme (light only, avoids flicker) -->
+    <style name="Theme.SmartHome.Auth" parent="Theme.SmartHome">
+        <item name="android:windowSoftInputMode">adjustResize</item>
     </style>
 </resources>

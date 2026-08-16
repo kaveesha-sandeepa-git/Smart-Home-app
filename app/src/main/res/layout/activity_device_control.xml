@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="@color/background_primary">
+    android:background="@color/bg">
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
@@ -29,7 +29,7 @@
                 android:layout_height="wrap_content"
                 app:cardCornerRadius="8dp"
                 app:cardElevation="2dp"
-                app:cardBackgroundColor="@color/background_secondary">
+                app:cardBackgroundColor="@color/card">
 
                 <RelativeLayout
                     android:layout_width="match_parent"
@@ -73,7 +73,7 @@
                             android:text="Device Name"
                             android:textSize="16sp"
                             android:textStyle="bold"
-                            android:textColor="@color/text_primary" />
+                            android:textColor="@color/ink" />
 
                         <TextView
                             android:id="@+id/device_type"
@@ -84,7 +84,7 @@
                             android:textSize="11sp"
                             android:textStyle="bold"
                             android:letterSpacing="0.05"
-                            android:textColor="@color/text_secondary" />
+                            android:textColor="@color/ink_soft" />
 
                     </LinearLayout>
 
@@ -123,8 +123,8 @@
                     android:textStyle="bold"
                     android:textSize="14sp"
                     android:padding="14dp"
-                    android:textColor="@color/text_secondary"
-                    android:backgroundTint="@color/background_secondary" />
+                    android:textColor="@color/ink_soft"
+                    android:backgroundTint="@color/card" />
 
             </LinearLayout>
 
@@ -136,7 +136,7 @@
                 android:layout_marginBottom="12dp"
                 app:cardCornerRadius="8dp"
                 app:cardElevation="2dp"
-                app:cardBackgroundColor="@color/background_secondary">
+                app:cardBackgroundColor="@color/card">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -155,7 +155,7 @@
                             android:textSize="11sp"
                             android:textStyle="bold"
                             android:letterSpacing="0.05"
-                            android:textColor="@color/text_secondary" />
+                            android:textColor="@color/ink_soft" />
                         <TextView
                             android:id="@+id/brightness_value"
                             android:layout_width="wrap_content"
@@ -188,7 +188,7 @@
                 android:layout_marginBottom="12dp"
                 app:cardCornerRadius="8dp"
                 app:cardElevation="2dp"
-                app:cardBackgroundColor="@color/background_secondary">
+                app:cardBackgroundColor="@color/card">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -207,7 +207,7 @@
                             android:textSize="11sp"
                             android:textStyle="bold"
                             android:letterSpacing="0.05"
-                            android:textColor="@color/text_secondary" />
+                            android:textColor="@color/ink_soft" />
                         <androidx.appcompat.widget.SwitchCompat
                             android:id="@+id/scheduling_toggle"
                             android:layout_width="wrap_content"
@@ -232,7 +232,7 @@
                                 android:text="ON TIME"
                                 android:textSize="11sp"
                                 android:textStyle="bold"
-                                android:textColor="@color/text_secondary" />
+                                android:textColor="@color/ink_soft" />
                             <EditText
                                 android:id="@+id/input_on_time"
                                 android:layout_width="match_parent"
@@ -240,6 +240,7 @@
                                 android:layout_marginTop="4dp"
                                 android:background="@drawable/input_background"
                                 android:padding="8dp"
+                                android:textColor="@color/ink"
                                 android:textSize="13sp"
                                 android:text="18:00" />
                         </LinearLayout>
@@ -256,7 +257,7 @@
                                 android:text="OFF TIME"
                                 android:textSize="11sp"
                                 android:textStyle="bold"
-                                android:textColor="@color/text_secondary" />
+                                android:textColor="@color/ink_soft" />
                             <EditText
                                 android:id="@+id/input_off_time"
                                 android:layout_width="match_parent"
@@ -264,6 +265,7 @@
                                 android:layout_marginTop="4dp"
                                 android:background="@drawable/input_background"
                                 android:padding="8dp"
+                                android:textColor="@color/ink"
                                 android:textSize="13sp"
                                 android:text="23:30" />
                         </LinearLayout>
@@ -280,7 +282,7 @@
                 android:layout_marginBottom="12dp"
                 app:cardCornerRadius="8dp"
                 app:cardElevation="2dp"
-                app:cardBackgroundColor="@color/background_secondary"
+                app:cardBackgroundColor="@color/card"
                 android:visibility="gone">
 
                 <LinearLayout
@@ -296,7 +298,7 @@
                         android:textSize="11sp"
                         android:textStyle="bold"
                         android:letterSpacing="0.05"
-                        android:textColor="@color/text_secondary"
+                        android:textColor="@color/ink_soft"
                         android:layout_marginBottom="6dp" />
 
                     <LinearLayout
@@ -312,6 +314,7 @@
                             android:inputType="number"
                             android:text="30"
                             android:padding="8dp"
+                            android:textColor="@color/ink"
                             android:textSize="13sp"
                             android:background="@drawable/input_background"
                             android:layout_marginEnd="8dp" />
@@ -338,7 +341,7 @@
                 android:layout_marginBottom="12dp"
                 app:cardCornerRadius="8dp"
                 app:cardElevation="2dp"
-                app:cardBackgroundColor="@color/background_secondary"
+                app:cardBackgroundColor="@color/card"
                 android:visibility="gone">
 
                 <LinearLayout
@@ -354,7 +357,7 @@
                         android:textSize="11sp"
                         android:textStyle="bold"
                         android:letterSpacing="0.05"
-                        android:textColor="@color/text_secondary"
+                        android:textColor="@color/ink_soft"
                         android:layout_marginBottom="8dp" />
 
                     <androidx.recyclerview.widget.RecyclerView
@@ -373,7 +376,7 @@
                 android:layout_marginBottom="12dp"
                 app:cardCornerRadius="8dp"
                 app:cardElevation="2dp"
-                app:cardBackgroundColor="@color/background_secondary">
+                app:cardBackgroundColor="@color/card">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -388,7 +391,7 @@
                         android:textSize="11sp"
                         android:textStyle="bold"
                         android:letterSpacing="0.05"
-                        android:textColor="@color/text_secondary"
+                        android:textColor="@color/ink_soft"
                         android:layout_marginBottom="12dp" />
 
                     <LinearLayout
@@ -411,7 +414,7 @@
                                 android:text="1h 12m"
                                 android:textSize="19sp"
                                 android:textStyle="bold"
-                                android:textColor="@color/text_primary" />
+                                android:textColor="@color/ink" />
 
                             <TextView
                                 android:layout_width="wrap_content"
@@ -420,7 +423,7 @@
                                 android:textSize="10sp"
                                 android:textStyle="bold"
                                 android:letterSpacing="0.04"
-                                android:textColor="@color/text_secondary" />
+                                android:textColor="@color/ink_soft" />
 
                         </LinearLayout>
 
@@ -439,7 +442,7 @@
                                 android:text="48h 20m"
                                 android:textSize="19sp"
                                 android:textStyle="bold"
-                                android:textColor="@color/text_primary" />
+                                android:textColor="@color/ink" />
 
                             <TextView
                                 android:layout_width="wrap_content"
@@ -448,7 +451,7 @@
                                 android:textSize="10sp"
                                 android:textStyle="bold"
                                 android:letterSpacing="0.04"
-                                android:textColor="@color/text_secondary" />
+                                android:textColor="@color/ink_soft" />
 
                         </LinearLayout>
 

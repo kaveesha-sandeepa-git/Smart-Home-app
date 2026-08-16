@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="@color/background_primary">
+    android:background="@color/bg">
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
@@ -29,7 +29,7 @@
                 android:layout_height="wrap_content"
                 app:cardCornerRadius="8dp"
                 app:cardElevation="2dp"
-                app:cardBackgroundColor="@color/background_secondary">
+                app:cardBackgroundColor="@color/card">
 
                 <RelativeLayout
                     android:layout_width="match_parent"
@@ -45,7 +45,7 @@
                         android:text="Floor Name"
                         android:textSize="14sp"
                         android:textStyle="bold"
-                        android:textColor="@color/text_primary" />
+                        android:textColor="@color/ink" />
 
                     <TextView
                         android:id="@+id/floor_info"
@@ -60,7 +60,7 @@
                         android:paddingEnd="9dp"
                         android:paddingTop="4dp"
                         android:paddingBottom="4dp"
-                        android:textColor="@color/text_secondary"
+                        android:textColor="@color/ink_soft"
                         android:background="@drawable/input_background" />
 
                 </RelativeLayout>
@@ -73,7 +73,7 @@
                 android:layout_marginTop="10dp"
                 app:cardCornerRadius="8dp"
                 app:cardElevation="2dp"
-                app:cardBackgroundColor="@color/background_secondary">
+                app:cardBackgroundColor="@color/card">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -93,7 +93,7 @@
                             android:layout_height="wrap_content"
                             android:text="SELECT FLOOR"
                             android:textSize="10sp"
-                            android:textColor="@color/text_secondary"
+                            android:textColor="@color/ink_soft"
                             android:letterSpacing="0.06"
                             android:textStyle="bold" />
 
@@ -143,7 +143,7 @@
                 android:layout_height="wrap_content"
                 android:text="Tap a marker to open Device Control"
                 android:textSize="10sp"
-                android:textColor="@color/text_secondary"
+                android:textColor="@color/ink_soft"
                 android:gravity="center"
                 android:layout_marginTop="8dp"
                 android:layout_marginBottom="16dp" />

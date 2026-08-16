@@ -7,7 +7,7 @@
     android:layout_marginBottom="8dp"
     app:cardCornerRadius="8dp"
     app:cardElevation="2dp"
-    app:cardBackgroundColor="@color/background_secondary">
+    app:cardBackgroundColor="@color/card">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -45,7 +45,7 @@
                     android:text="Device Name"
                     android:textSize="13sp"
                     android:textStyle="bold"
-                    android:textColor="@color/text_primary" />
+                    android:textColor="@color/ink" />
 
             </LinearLayout>
 
@@ -94,7 +94,7 @@
                         android:textSize="10sp"
                         android:textStyle="bold"
                         android:letterSpacing="0.04"
-                        android:textColor="@color/text_secondary" />
+                        android:textColor="@color/ink_soft" />
                     <TextView
                         android:id="@+id/stat_total_on"
                         android:layout_width="wrap_content"
@@ -102,7 +102,7 @@
                         android:text="0h 0m"
                         android:textSize="13sp"
                         android:textStyle="bold"
-                        android:textColor="@color/text_primary" />
+                        android:textColor="@color/ink" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -118,7 +118,7 @@
                         android:textSize="10sp"
                         android:textStyle="bold"
                         android:letterSpacing="0.04"
-                        android:textColor="@color/text_secondary" />
+                        android:textColor="@color/ink_soft" />
                     <TextView
                         android:id="@+id/stat_toggles"
                         android:layout_width="wrap_content"
@@ -126,7 +126,7 @@
                         android:text="0"
                         android:textSize="13sp"
                         android:textStyle="bold"
-                        android:textColor="@color/text_primary" />
+                        android:textColor="@color/ink" />
                 </LinearLayout>
 
             </LinearLayout>
@@ -149,7 +149,7 @@
                         android:textSize="10sp"
                         android:textStyle="bold"
                         android:letterSpacing="0.04"
-                        android:textColor="@color/text_secondary" />
+                        android:textColor="@color/ink_soft" />
                     <TextView
                         android:id="@+id/stat_energy"
                         android:layout_width="wrap_content"
@@ -157,7 +157,7 @@
                         android:text="0 kWh"
                         android:textSize="13sp"
                         android:textStyle="bold"
-                        android:textColor="@color/text_primary" />
+                        android:textColor="@color/ink" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -173,7 +173,7 @@
                         android:textSize="10sp"
                         android:textStyle="bold"
                         android:letterSpacing="0.04"
-                        android:textColor="@color/text_secondary" />
+                        android:textColor="@color/ink_soft" />
                     <TextView
                         android:id="@+id/stat_last_active"
                         android:layout_width="wrap_content"
@@ -181,7 +181,7 @@
                         android:text="Now"
                         android:textSize="13sp"
                         android:textStyle="bold"
-                        android:textColor="@color/text_primary" />
+                        android:textColor="@color/ink" />
                 </LinearLayout>
 
             </LinearLayout>

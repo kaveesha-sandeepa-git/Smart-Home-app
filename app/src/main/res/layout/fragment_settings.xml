@@ -4,14 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="@color/background_primary">
-
-    <androidx.appcompat.widget.Toolbar
-        android:id="@+id/toolbar"
-        android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        android:background="@color/primary"
-        app:titleTextColor="@color/white" />
+    android:background="@color/bg">
 
     <ScrollView
         android:layout_width="match_parent"
@@ -23,14 +16,14 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <!-- Sync Status Section -->
+            <!-- ── Sync Status Section ── -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="SYNC STATUS"
                 android:textSize="10.5sp"
                 android:textStyle="bold"
-                android:textColor="@color/text_secondary"
+                android:textColor="@color/ink_soft"
                 android:letterSpacing="0.06"
                 android:layout_marginStart="16dp"
                 android:layout_marginBottom="8dp" />
@@ -43,7 +36,7 @@
                 android:layout_marginBottom="16dp"
                 app:cardCornerRadius="8dp"
                 app:cardElevation="2dp"
-                app:cardBackgroundColor="@color/background_secondary">
+                app:cardBackgroundColor="@color/card">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -51,6 +44,7 @@
                     android:orientation="vertical"
                     android:padding="14dp">
 
+                    <!-- Firebase row -->
                     <RelativeLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -61,7 +55,7 @@
                             android:text="Firebase"
                             android:textSize="13sp"
                             android:textStyle="bold"
-                            android:textColor="@color/text_primary" />
+                            android:textColor="@color/ink" />
                         <TextView
                             android:id="@+id/firebase_status"
                             android:layout_width="wrap_content"
@@ -78,6 +72,7 @@
                             android:background="@drawable/status_chip_on_bg" />
                     </RelativeLayout>
 
+                    <!-- Last sync row -->
                     <RelativeLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content">
@@ -86,7 +81,7 @@
                             android:layout_height="wrap_content"
                             android:text="Last sync"
                             android:textSize="11.5sp"
-                            android:textColor="@color/text_secondary" />
+                            android:textColor="@color/ink_soft" />
                         <TextView
                             android:id="@+id/last_sync_time"
                             android:layout_width="wrap_content"
@@ -95,20 +90,20 @@
                             android:text="2 min ago"
                             android:textSize="12sp"
                             android:textStyle="bold"
-                            android:textColor="@color/text_primary" />
+                            android:textColor="@color/ink" />
                     </RelativeLayout>
 
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
 
-            <!-- General Settings Section -->
+            <!-- ── General Settings Section ── -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="GENERAL"
                 android:textSize="10.5sp"
                 android:textStyle="bold"
-                android:textColor="@color/text_secondary"
+                android:textColor="@color/ink_soft"
                 android:letterSpacing="0.06"
                 android:layout_marginStart="16dp"
                 android:layout_marginBottom="8dp" />
@@ -118,10 +113,10 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="14dp"
                 android:layout_marginEnd="14dp"
-                android:layout_marginBottom="24dp"
+                android:layout_marginBottom="16dp"
                 app:cardCornerRadius="8dp"
                 app:cardElevation="2dp"
-                app:cardBackgroundColor="@color/background_secondary">
+                app:cardBackgroundColor="@color/card">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -145,14 +140,14 @@
                                 android:text="Notifications enabled"
                                 android:textSize="13sp"
                                 android:textStyle="bold"
-                                android:textColor="@color/text_primary" />
+                                android:textColor="@color/ink" />
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="Push alerts for device status changes"
                                 android:textSize="10.5sp"
                                 android:layout_marginTop="2dp"
-                                android:textColor="@color/text_secondary" />
+                                android:textColor="@color/ink_soft" />
                         </LinearLayout>
                         <androidx.appcompat.widget.SwitchCompat
                             android:id="@+id/notifications_toggle"
@@ -161,7 +156,7 @@
                             android:layout_alignParentEnd="true"
                             android:layout_centerVertical="true" />
                     </RelativeLayout>
-                    <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#E6E8EB" />
+                    <View android:layout_width="match_parent" android:layout_height="1dp" android:background="@color/line" />
 
                     <!-- Safety Alerts -->
                     <RelativeLayout
@@ -180,14 +175,14 @@
                                 android:text="Safety alerts"
                                 android:textSize="13sp"
                                 android:textStyle="bold"
-                                android:textColor="@color/text_primary" />
+                                android:textColor="@color/ink" />
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="Alerts when iron exceeds max ON duration"
                                 android:textSize="10.5sp"
                                 android:layout_marginTop="2dp"
-                                android:textColor="@color/text_secondary" />
+                                android:textColor="@color/ink_soft" />
                         </LinearLayout>
                         <androidx.appcompat.widget.SwitchCompat
                             android:id="@+id/safety_alerts_toggle"
@@ -196,7 +191,7 @@
                             android:layout_alignParentEnd="true"
                             android:layout_centerVertical="true" />
                     </RelativeLayout>
-                    <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#E6E8EB" />
+                    <View android:layout_width="match_parent" android:layout_height="1dp" android:background="@color/line" />
 
                     <!-- Auto Sync -->
                     <RelativeLayout
@@ -215,14 +210,14 @@
                                 android:text="Auto sync"
                                 android:textSize="13sp"
                                 android:textStyle="bold"
-                                android:textColor="@color/text_primary" />
+                                android:textColor="@color/ink" />
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="Background Firebase sync every 15 minutes"
                                 android:textSize="10.5sp"
                                 android:layout_marginTop="2dp"
-                                android:textColor="@color/text_secondary" />
+                                android:textColor="@color/ink_soft" />
                         </LinearLayout>
                         <androidx.appcompat.widget.SwitchCompat
                             android:id="@+id/auto_sync_toggle"
@@ -231,7 +226,7 @@
                             android:layout_alignParentEnd="true"
                             android:layout_centerVertical="true" />
                     </RelativeLayout>
-                    <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#E6E8EB" />
+                    <View android:layout_width="match_parent" android:layout_height="1dp" android:background="@color/line" />
 
                     <!-- Dark Mode -->
                     <RelativeLayout
@@ -250,14 +245,14 @@
                                 android:text="Dark mode"
                                 android:textSize="13sp"
                                 android:textStyle="bold"
-                                android:textColor="@color/text_primary" />
+                                android:textColor="@color/ink" />
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="Switch the app to a dark color scheme"
                                 android:textSize="10.5sp"
                                 android:layout_marginTop="2dp"
-                                android:textColor="@color/text_secondary" />
+                                android:textColor="@color/ink_soft" />
                         </LinearLayout>
                         <androidx.appcompat.widget.SwitchCompat
                             android:id="@+id/dark_mode_toggle"
@@ -265,6 +260,84 @@
                             android:layout_height="wrap_content"
                             android:layout_alignParentEnd="true"
                             android:layout_centerVertical="true" />
+                    </RelativeLayout>
+
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+            <!-- ── About / App Version Section ── -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="ABOUT"
+                android:textSize="10.5sp"
+                android:textStyle="bold"
+                android:textColor="@color/ink_soft"
+                android:letterSpacing="0.06"
+                android:layout_marginStart="16dp"
+                android:layout_marginBottom="8dp" />
+
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="14dp"
+                android:layout_marginEnd="14dp"
+                android:layout_marginBottom="32dp"
+                app:cardCornerRadius="8dp"
+                app:cardElevation="2dp"
+                app:cardBackgroundColor="@color/card">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <!-- App Name -->
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:padding="14dp">
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerVertical="true"
+                            android:text="App Name"
+                            android:textSize="13sp"
+                            android:textStyle="bold"
+                            android:textColor="@color/ink" />
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentEnd="true"
+                            android:layout_centerVertical="true"
+                            android:text="Smart Home"
+                            android:textSize="12sp"
+                            android:textColor="@color/ink_soft" />
+                    </RelativeLayout>
+                    <View android:layout_width="match_parent" android:layout_height="1dp" android:background="@color/line" />
+
+                    <!-- App Version -->
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:padding="14dp">
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerVertical="true"
+                            android:text="App Version"
+                            android:textSize="13sp"
+                            android:textStyle="bold"
+                            android:textColor="@color/ink" />
+                        <TextView
+                            android:id="@+id/tv_app_version"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentEnd="true"
+                            android:layout_centerVertical="true"
+                            android:text="1.0.0"
+                            android:textSize="12sp"
+                            android:textColor="@color/ink_soft" />
                     </RelativeLayout>
 
                 </LinearLayout>

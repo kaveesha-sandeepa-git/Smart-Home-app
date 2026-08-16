@@ -1,0 +1,1290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Smart Home App — UI Prototype</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&family=Inter:wght@400;500;600;700&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --primary:#2196F3;
+    --primary-dark:#1976D2;
+    --secondary:#03DAC6;
+    --danger:#F44336;
+    --success:#4CAF50;
+    --warning:#FF9800;
+    --grey:#9E9E9E;
+    --bg:#F5F5F5;
+    --card:#FFFFFF;
+    --ink:#1A1C1E;
+    --ink-soft:#5F6368;
+    --line:#E6E8EB;
+    --radius:8px;
+    --shadow: 0 1px 2px rgba(0,0,0,0.06), 0 2px 6px rgba(0,0,0,0.06);
+    --shadow-lg: 0 4px 14px rgba(0,0,0,0.12);
+  }
+  [data-theme="dark"]{
+    --bg:#121417;
+    --card:#1D2024;
+    --ink:#F1F2F4;
+    --ink-soft:#9AA0A6;
+    --line:#2B2F34;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    font-family:'Inter','Roboto',sans-serif;
+    background:#0F1113;
+    color:#1A1C1E;
+    min-height:100vh;
+    padding:32px 16px 60px;
+  }
+  .page-head{
+    max-width:1180px;
+    margin:0 auto 28px;
+    color:#EDEEF0;
+  }
+  .page-head .eyebrow{
+    font-family:'Roboto Mono',monospace;
+    font-size:11px;
+    letter-spacing:.14em;
+    text-transform:uppercase;
+    color:var(--secondary);
+    margin-bottom:6px;
+  }
+  .page-head h1{
+    font-family:'Roboto',sans-serif;
+    font-weight:900;
+    font-size:26px;
+    margin:0 0 6px;
+  }
+  .page-head p{
+    margin:0;
+    font-size:13.5px;
+    color:#9AA0A6;
+    max-width:640px;
+    line-height:1.5;
+  }
+  .layout{
+    max-width:1180px;
+    margin:0 auto;
+    display:grid;
+    grid-template-columns:420px 1fr;
+    gap:28px;
+    align-items:start;
+  }
+  @media (max-width:920px){
+    .layout{grid-template-columns:1fr;}
+  }
+  .stage{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:18px;
+  }
+  .tabs{
+    display:flex;
+    flex-wrap:wrap;
+    gap:6px;
+    justify-content:center;
+    background:#1A1D21;
+    padding:6px;
+    border-radius:12px;
+  }
+  .tabs button{
+    border:none;
+    background:transparent;
+    color:#9AA0A6;
+    font-family:'Inter',sans-serif;
+    font-size:11.5px;
+    font-weight:600;
+    padding:8px 12px;
+    border-radius:8px;
+    cursor:pointer;
+    transition:.15s;
+    white-space:nowrap;
+  }
+  .tabs button.active{ background:var(--primary); color:#fff; }
+  .tabs button:hover:not(.active){ background:#25292E; color:#EDEEF0; }
+
+  /* PHONE FRAME */
+  .phone{
+    width:380px;
+    height:800px;
+    background:#000;
+    border-radius:42px;
+    padding:12px;
+    box-shadow:0 30px 60px -20px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.04);
+    position:relative;
+  }
+  .phone-screen{
+    width:100%;
+    height:100%;
+    background:var(--bg);
+    border-radius:32px;
+    overflow:hidden;
+    position:relative;
+    display:flex;
+    flex-direction:column;
+  }
+  .status-bar{
+    height:28px;
+    flex:0 0 auto;
+    background:var(--primary);
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:0 20px;
+    font-size:11px;
+    color:#fff;
+    font-weight:600;
+    font-family:'Roboto Mono',monospace;
+  }
+  .content-area{
+    flex:1 1 auto;
+    overflow-y:auto;
+    display:flex;
+    flex-direction:column;
+    -ms-overflow-style:none; scrollbar-width:none;
+    background:var(--bg);
+  }
+  .content-area::-webkit-scrollbar{display:none;}
+
+  /* TOOLBAR */
+  .toolbar{
+    background:var(--primary);
+    color:#fff;
+    padding:14px 16px;
+    display:flex;
+    align-items:center;
+    gap:10px;
+    flex:0 0 auto;
+    box-shadow:var(--shadow);
+    z-index:2;
+  }
+  .toolbar .back{
+    width:22px;height:22px;cursor:pointer;opacity:.95;
+    display:flex;align-items:center;justify-content:center;
+  }
+  .toolbar h2{
+    font-family:'Roboto',sans-serif;
+    font-size:17px;
+    font-weight:700;
+    margin:0;
+    letter-spacing:.1px;
+  }
+  .toolbar .sub{ font-size:11px; opacity:.85; font-weight:400; margin-top:1px;}
+  .toolbar h2{ flex:1; }
+  .toolbar-notif{
+    width:22px; height:22px; position:relative; cursor:pointer; flex:0 0 auto;
+    display:flex; align-items:center; justify-content:center; opacity:.95;
+  }
+  .toolbar-notif svg{ width:20px; height:20px; }
+  .notif-dot{
+    position:absolute; top:-1px; right:-1px; width:8px; height:8px; border-radius:50%;
+    background:var(--danger); border:1.5px solid var(--primary);
+  }
+
+  /* BOTTOM NAV */
+  .bottom-nav{
+    flex:0 0 auto;
+    display:flex;
+    background:var(--card);
+    border-top:1px solid var(--line);
+    box-shadow:0 -2px 10px rgba(0,0,0,0.05);
+    padding:6px 0 8px;
+    position:relative;
+    z-index:5;
+  }
+  .nav-item{
+    flex:1;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:2px;
+    cursor:pointer;
+    color:var(--ink-soft);
+    padding-top:4px;
+  }
+  .nav-item svg{ width:20px; height:20px; }
+  .nav-item span{ font-size:10px; font-weight:600; font-family:'Roboto',sans-serif;}
+  .nav-item.active{ color:var(--primary); }
+
+  /* SHARED CARD */
+  .card{
+    background:var(--card);
+    border-radius:var(--radius);
+    box-shadow:var(--shadow);
+    padding:14px;
+  }
+  .section-pad{ padding:14px; display:flex; flex-direction:column; gap:12px; }
+
+  /* DASHBOARD */
+  .floor-select{
+    margin:0 14px;
+    background:var(--card);
+    border-radius:var(--radius);
+    box-shadow:var(--shadow);
+    padding:10px 12px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    cursor:pointer;
+    font-family:'Roboto',sans-serif;
+    position:relative;
+  }
+  .floor-select .label{ font-size:10px; color:var(--ink-soft); text-transform:uppercase; letter-spacing:.06em; font-weight:600;}
+  .floor-select .value{ font-size:14.5px; font-weight:700; color:var(--ink); margin-top:1px;}
+  .floor-select select{
+    position:absolute; inset:0; width:100%; height:100%;
+    border:none; background:transparent; font-family:'Roboto',sans-serif;
+    font-size:14.5px; font-weight:700; color:var(--ink); appearance:none; -webkit-appearance:none;
+    outline:none; cursor:pointer; opacity:0;
+  }
+  .floor-select .chev{ color:var(--primary); font-size:16px; pointer-events:none; }
+  .section-title{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:4px 16px 0; margin-top:4px;
+  }
+  .section-title h4{ margin:0; font-family:'Roboto',sans-serif; font-size:13px; font-weight:700; color:var(--ink); text-transform:uppercase; letter-spacing:.04em;}
+  .section-title .count{ font-size:11px; color:var(--ink-soft); font-weight:600; }
+  .stats-row{ display:flex; gap:10px; padding:0 14px; }
+  .stat-card{
+    flex:1; background:var(--card); border-radius:var(--radius); box-shadow:var(--shadow);
+    padding:12px 14px;
+  }
+  .stat-card .num{ font-family:'Roboto',sans-serif; font-size:26px; font-weight:900; color:var(--primary); line-height:1;}
+  .stat-card.total .num{ color:var(--ink); }
+  .stat-card .lbl{ font-size:10.5px; color:var(--ink-soft); font-weight:600; margin-top:4px; text-transform:uppercase; letter-spacing:.04em;}
+
+  .device-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:10px;
+    padding:14px;
+  }
+  .device-card{
+    background:var(--card);
+    border-radius:var(--radius);
+    box-shadow:var(--shadow);
+    padding:12px;
+    cursor:pointer;
+    transition:transform .1s, box-shadow .1s;
+    position:relative;
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+  }
+  .device-card:active{ transform:scale(.97); }
+  .device-card .status-abs{ position:absolute; top:10px; right:10px; }
+  .device-card .icon-badge{
+    width:38px;height:38px;border-radius:10px;
+    display:flex;align-items:center;justify-content:center;
+    font-size:19px;
+    margin-right:52px;
+  }
+  .device-card .dname{ font-family:'Roboto',sans-serif; font-weight:700; font-size:13px; color:var(--ink); line-height:1.25; padding-right:46px;}
+  .device-card .dtype{ font-size:10px; color:var(--ink-soft); font-weight:500;}
+  .card-switch-row{
+    display:flex; align-items:center; justify-content:space-between;
+    margin-top:2px; padding-top:8px; border-top:1px solid var(--line);
+  }
+  .card-switch-row .cs-label{ font-size:10.5px; font-weight:700; color:var(--ink-soft); text-transform:uppercase; letter-spacing:.04em;}
+  .chip{
+    display:inline-flex; align-items:center; gap:4px;
+    padding:3px 9px; border-radius:20px; font-size:10px; font-weight:700;
+    font-family:'Roboto',sans-serif; letter-spacing:.03em; align-self:flex-start;
+  }
+  .chip.ON{ background:rgba(76,175,80,0.14); color:var(--success); }
+  .chip.OFF{ background:rgba(244,67,54,0.12); color:var(--danger); }
+  .chip.ERROR{ background:rgba(255,152,0,0.14); color:var(--warning); }
+  .chip.DISCONNECTED{ background:rgba(158,158,158,0.16); color:var(--grey); }
+  .chip .dot{ width:6px;height:6px;border-radius:50%; background:currentColor;}
+
+  /* DEVICE CONTROL */
+  .dc-header{
+    background:var(--card); margin:14px; border-radius:var(--radius); box-shadow:var(--shadow);
+    padding:18px 16px; display:flex; flex-direction:column; align-items:center; gap:8px; text-align:center;
+  }
+  .dc-header .icon-badge{ width:56px;height:56px;border-radius:16px;font-size:28px; display:flex;align-items:center;justify-content:center;}
+  .dc-header h3{ margin:2px 0 0; font-family:'Roboto',sans-serif; font-size:16px; font-weight:700; color:var(--ink);}
+  .dc-header .type{ font-size:11px; color:var(--ink-soft); font-weight:600; text-transform:uppercase; letter-spacing:.05em;}
+  .onoff-row{ display:flex; gap:10px; margin:0 14px 4px; }
+  .onoff-btn{
+    flex:1; border:none; border-radius:var(--radius); padding:14px; font-family:'Roboto',sans-serif;
+    font-weight:700; font-size:14px; cursor:pointer; letter-spacing:.03em; box-shadow:var(--shadow);
+    transition:.15s;
+  }
+  .onoff-btn.on-btn{ background:var(--success); color:#fff; }
+  .onoff-btn.off-btn{ background:var(--danger); color:#fff; }
+  .onoff-btn:disabled{ opacity:.4; cursor:not-allowed; }
+  .onoff-btn.inactive{ background:var(--card); color:var(--ink-soft); box-shadow:none; border:1px solid var(--line);}
+
+  .type-chip-row{ display:flex; gap:6px; margin:6px 14px 0; flex-wrap:wrap;}
+  .type-chip-row .tchip{
+    padding:5px 10px; border-radius:20px; font-size:10px; font-weight:700; cursor:pointer;
+    border:1px solid var(--line); color:var(--ink-soft); background:var(--card); font-family:'Roboto',sans-serif;
+  }
+  .type-chip-row .tchip.active{ background:var(--primary); color:#fff; border-color:var(--primary);}
+
+  .field-label{ font-size:11px; font-weight:700; color:var(--ink-soft); text-transform:uppercase; letter-spacing:.05em; margin-bottom:6px;}
+  .row-between{ display:flex; align-items:center; justify-content:space-between;}
+  .switch{ width:38px; height:22px; border-radius:20px; background:var(--line); position:relative; cursor:pointer; flex:0 0 auto; transition:.15s;}
+  .switch.on{ background:var(--success); }
+  .switch.disabled{ opacity:.4; cursor:not-allowed; pointer-events:none; }
+  .switch .knob{ width:18px;height:18px;border-radius:50%;background:#fff;position:absolute;top:2px;left:2px;transition:.15s; box-shadow:0 1px 3px rgba(0,0,0,.3);}
+  .switch.on .knob{ left:18px; }
+  input[type=range]{ width:100%; accent-color:var(--primary); }
+  .seg3{ display:flex; gap:6px; }
+  .seg3 button{ flex:1; padding:8px 0; border-radius:6px; border:1px solid var(--line); background:var(--bg); font-size:10.5px; font-weight:700; color:var(--ink-soft); cursor:pointer; font-family:'Roboto',sans-serif;}
+  .seg3 button.active{ background:var(--primary); color:#fff; border-color:var(--primary);}
+  .mini-input{ border:1px solid var(--line); border-radius:6px; padding:8px 10px; font-size:13px; width:100%; font-family:'Inter',sans-serif; background:var(--bg); color:var(--ink); box-sizing:border-box;}
+  .btn-primary{ background:var(--primary); color:#fff; border:none; border-radius:6px; padding:9px 14px; font-weight:700; font-size:12px; cursor:pointer; font-family:'Roboto',sans-serif;}
+  .banner{ display:flex; gap:8px; align-items:flex-start; background:rgba(255,152,0,0.12); border:1px solid rgba(255,152,0,.35); border-radius:6px; padding:9px 10px; font-size:11.5px; color:#9a5c00; font-weight:600; line-height:1.4;}
+  [data-theme="dark"] .banner{ color:#FFC078; }
+  .sub-switch-row{ display:flex; align-items:center; justify-content:space-between; padding:8px 0; border-bottom:1px solid var(--line); font-size:12.5px; color:var(--ink); font-weight:600;}
+  .sub-switch-row:last-child{ border-bottom:none; }
+  .mono{ font-family:'Roboto Mono',monospace; font-size:11px; color:var(--ink-soft); background:var(--bg); padding:7px 9px; border-radius:6px; word-break:break-all;}
+  .usage-bars{ display:flex; gap:14px; }
+  .usage-bars .ub{ flex:1; }
+  .usage-bars .val{ font-family:'Roboto',sans-serif; font-weight:900; font-size:19px; color:var(--ink);}
+  .usage-bars .lbl2{ font-size:10px; color:var(--ink-soft); font-weight:600; text-transform:uppercase; letter-spacing:.04em; margin-top:2px;}
+  .bar-track{ height:6px; background:var(--line); border-radius:4px; margin-top:6px; overflow:hidden;}
+  .bar-fill{ height:100%; background:var(--primary); border-radius:4px; }
+
+  /* FLOOR PLAN */
+  .floor-info{ display:flex; justify-content:space-between; align-items:center; padding:12px 16px; background:var(--card); margin:14px 14px 0; border-radius:var(--radius); box-shadow:var(--shadow);}
+  .floor-info .fname{ font-family:'Roboto',sans-serif; font-weight:700; font-size:13.5px; color:var(--ink);}
+  .floor-info .fgrid{ font-size:10.5px; color:var(--ink-soft); font-weight:600; background:var(--bg); padding:4px 9px; border-radius:20px;}
+  .blueprint{
+    margin:12px 14px; border-radius:var(--radius); box-shadow:var(--shadow);
+    background:
+      linear-gradient(var(--card) 0 0),
+      repeating-linear-gradient(0deg, rgba(33,150,243,0.09) 0 1px, transparent 1px calc(100%/var(--gcols))),
+      repeating-linear-gradient(90deg, rgba(33,150,243,0.09) 0 1px, transparent 1px calc(100%/var(--gcols)));
+    background-blend-mode:normal;
+    position:relative;
+    aspect-ratio:1/1;
+    overflow:hidden;
+    border:1px solid var(--line);
+  }
+  .marker{
+    position:absolute; width:34px; height:34px; margin:-17px 0 0 -17px;
+    border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:15px;
+    box-shadow:0 2px 6px rgba(0,0,0,.25); cursor:pointer; border:2px solid #fff;
+  }
+  .legend{ display:flex; gap:10px; flex-wrap:wrap; padding:10px 16px 4px; }
+  .legend .li{ display:flex; align-items:center; gap:5px; font-size:10px; color:var(--ink-soft); font-weight:600;}
+  .legend .dotb{ width:9px;height:9px;border-radius:50%;}
+
+  /* REPORTS */
+  .filter-row{ display:flex; gap:8px; padding:14px 14px 4px; }
+  .filter-row button{
+    flex:1; padding:9px 0; border-radius:20px; border:1px solid var(--line); background:var(--card);
+    font-size:11px; font-weight:700; color:var(--ink-soft); cursor:pointer; font-family:'Roboto',sans-serif;
+  }
+  .filter-row button.active{ background:var(--primary); color:#fff; border-color:var(--primary); }
+  .report-card{ margin:8px 14px 0; background:var(--card); border-radius:var(--radius); box-shadow:var(--shadow); padding:12px 14px;}
+  .report-card .rtop{ display:flex; justify-content:space-between; align-items:flex-start; gap:10px;}
+  .report-card .rname-wrap{ display:flex; align-items:center; gap:8px; }
+  .report-card .ricon{ width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:13px;flex:0 0 auto;}
+  .report-card .rname{ font-family:'Roboto',sans-serif; font-weight:700; font-size:13px; color:var(--ink);}
+  .report-card .rstats{ margin-top:10px; display:grid; grid-template-columns:1fr 1fr; gap:8px 12px; }
+  .report-card .rstat{ display:flex; flex-direction:column; gap:2px; }
+  .report-card .rstat .rlabel{ font-size:10px; color:var(--ink-soft); font-weight:600; text-transform:uppercase; letter-spacing:.04em;}
+  .report-card .rstat .rvalue{ font-size:13px; color:var(--ink); font-weight:700; font-family:'Roboto',sans-serif;}
+  .empty-state{ text-align:center; padding:40px 24px; color:var(--ink-soft); font-size:12.5px;}
+
+  /* SETTINGS */
+  .settings-group{ margin:14px; }
+  .settings-group .gtitle{ font-size:10.5px; font-weight:700; color:var(--ink-soft); text-transform:uppercase; letter-spacing:.06em; margin:0 2px 8px;}
+  .setting-row{ display:flex; align-items:center; justify-content:space-between; background:var(--card); padding:12px 14px; border-bottom:1px solid var(--line);}
+  .setting-row:first-child{ border-radius:8px 8px 0 0;}
+  .setting-row:last-child{ border-bottom:none; border-radius:0 0 8px 8px;}
+  .setting-row .stitle{ font-size:13px; font-weight:600; color:var(--ink);}
+  .setting-row .sdesc{ font-size:10.5px; color:var(--ink-soft); margin-top:2px; max-width:220px; line-height:1.3;}
+  .settings-group.card-wrap{ box-shadow:var(--shadow); border-radius:8px; overflow:hidden;}
+  .status-pill{ display:inline-flex; align-items:center; gap:5px; font-size:11px; font-weight:700; padding:4px 10px; border-radius:20px;}
+  .status-pill.connected{ background:rgba(76,175,80,.14); color:var(--success);}
+  .status-pill.disc{ background:rgba(158,158,158,.16); color:var(--grey);}
+
+  /* tokens panel */
+  .tokens{
+    background:#16181B; border-radius:16px; padding:20px; color:#EDEEF0; align-self:stretch;
+  }
+  .tokens h3{ font-family:'Roboto',sans-serif; font-size:13px; text-transform:uppercase; letter-spacing:.08em; color:var(--secondary); margin:0 0 14px;}
+  .tok-row{ display:flex; align-items:center; gap:10px; padding:7px 0; border-bottom:1px solid #24272B; font-size:12px;}
+  .tok-row:last-child{ border:none; }
+  .swatch{ width:20px;height:20px;border-radius:5px; flex:0 0 auto; box-shadow:inset 0 0 0 1px rgba(255,255,255,.15);}
+  .tok-name{ color:#9AA0A6; flex:1; }
+  .tok-val{ font-family:'Roboto Mono',monospace; font-size:11px; color:#EDEEF0;}
+  .type-sample{ font-family:'Roboto',sans-serif; margin-top:4px;}
+  .note{ font-size:11px; color:#787D82; line-height:1.5; margin-top:14px;}
+
+  /* DETAILS MODAL (bottom sheet) */
+  .modal-layer{
+    position:absolute; inset:0; z-index:40;
+    display:none;
+  }
+  .modal-layer.open{ display:block; }
+  .modal-backdrop{
+    position:absolute; inset:0; background:rgba(0,0,0,0.45);
+  }
+  .sheet{
+    position:absolute; left:0; right:0; bottom:0;
+    background:var(--card);
+    border-radius:20px 20px 0 0;
+    box-shadow:0 -8px 30px rgba(0,0,0,0.25);
+    padding:10px 18px 20px;
+    max-height:72%;
+    overflow-y:auto;
+    animation:sheetUp .18s ease-out;
+  }
+  @keyframes sheetUp{ from{ transform:translateY(24px); opacity:0;} to{ transform:translateY(0); opacity:1;} }
+  .sheet .handle{ width:36px; height:4px; border-radius:3px; background:var(--line); margin:2px auto 12px; }
+  .sheet .sheet-top{ display:flex; align-items:flex-start; gap:12px; }
+  .sheet .sheet-right{ display:flex; flex-direction:column; align-items:flex-end; gap:8px; flex:0 0 auto; margin-left:auto; }
+  .sheet .sheet-top .icon-badge{ width:46px;height:46px;border-radius:12px;font-size:22px;display:flex;align-items:center;justify-content:center;flex:0 0 auto;}
+  .sheet .sheet-title{ font-family:'Roboto',sans-serif; font-weight:700; font-size:15px; color:var(--ink); }
+  .sheet .sheet-type{ font-size:10.5px; color:var(--ink-soft); font-weight:600; text-transform:uppercase; letter-spacing:.04em; margin-top:1px;}
+  .sheet .close-x{ width:26px;height:26px; border-radius:50%; background:var(--bg); display:flex; align-items:center; justify-content:center; cursor:pointer; color:var(--ink-soft); font-size:14px; flex:0 0 auto;}
+  .detail-rows{ margin-top:14px; display:flex; flex-direction:column; gap:0; }
+  .detail-row{ display:flex; justify-content:space-between; padding:9px 0; border-bottom:1px solid var(--line); font-size:12.5px;}
+  .detail-row:last-child{ border-bottom:none; }
+  .detail-row .dlabel{ color:var(--ink-soft); font-weight:500;}
+  .detail-row .dval{ color:var(--ink); font-weight:700; }
+  .sheet .onoff-row{ margin:16px 0 4px; }
+  .sheet .power-row{
+    display:flex; align-items:center; justify-content:space-between;
+    margin:16px 0 4px; padding:12px 14px; background:var(--bg); border-radius:8px;
+  }
+  .sheet .power-row .plabel{ font-size:13px; font-weight:700; color:var(--ink); }
+  .sheet .full-control-btn{
+    width:100%; margin-top:6px; background:var(--primary); color:#fff; border:none;
+    border-radius:8px; padding:12px 0; font-family:'Roboto',sans-serif; font-weight:700; font-size:13px; cursor:pointer;
+  }
+
+  /* NOTIFICATIONS SCREEN (full window) */
+  .notif-toolbar-action{
+    font-size:11.5px; font-weight:700; color:#fff; cursor:pointer; background:rgba(255,255,255,0.18);
+    border:none; padding:6px 12px; border-radius:20px; font-family:'Roboto',sans-serif; flex:0 0 auto;
+  }
+  .notif-list{ display:flex; flex-direction:column; padding-bottom:16px; }
+  .notif-item{ display:flex; gap:12px; padding:14px 16px; border-bottom:1px solid var(--line); cursor:pointer; background:var(--card); }
+  .notif-item.unread{ background:rgba(33,150,243,0.06); }
+  .notif-item .n-dot{ width:9px;height:9px;border-radius:50%; margin-top:5px; flex:0 0 auto; }
+  .notif-item .n-title{ font-size:13px; font-weight:700; color:var(--ink); line-height:1.3;}
+  .notif-item .n-msg{ font-size:11.5px; color:var(--ink-soft); margin-top:3px; line-height:1.4;}
+  .notif-item .n-time{ font-size:10px; color:var(--ink-soft); margin-top:6px; font-weight:600; text-transform:uppercase; letter-spacing:.03em;}
+  .notif-empty{ text-align:center; padding:60px 24px; color:var(--ink-soft); font-size:12.5px;}
+</style>
+</head>
+<body>
+
+<div class="page-head">
+  <div class="eyebrow">Android · Material Design 2 · Prototype</div>
+  <h1>Smart Home App — UI Design</h1>
+  <p>Click through all screens exactly as they'll behave in the app — toggle devices, open device control, tap floor plan markers, filter reports, flip settings. Use the token panel on the right when you convert each screen to XML.</p>
+</div>
+
+<div class="layout">
+  <div class="stage">
+    <div class="tabs" id="tabs"></div>
+    <div class="phone">
+      <div class="phone-screen" id="phoneScreen" data-theme="light">
+        <div class="status-bar">
+          <span>9:41</span>
+          <span>Smart Home</span>
+          <span>🔋 100%</span>
+        </div>
+        <div id="toolbarFixed"></div>
+        <div class="content-area" id="contentArea"></div>
+        <div id="bottomNavFixed"></div>
+        <div class="modal-layer" id="modalLayer"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="tokens">
+    <h3>Design tokens</h3>
+    <div class="tok-row"><div class="swatch" style="background:#2196F3"></div><div class="tok-name">Primary</div><div class="tok-val">#2196F3</div></div>
+    <div class="tok-row"><div class="swatch" style="background:#03DAC6"></div><div class="tok-name">Secondary</div><div class="tok-val">#03DAC6</div></div>
+    <div class="tok-row"><div class="swatch" style="background:#4CAF50"></div><div class="tok-name">Success / ON</div><div class="tok-val">#4CAF50</div></div>
+    <div class="tok-row"><div class="swatch" style="background:#F44336"></div><div class="tok-name">Danger / OFF</div><div class="tok-val">#F44336</div></div>
+    <div class="tok-row"><div class="swatch" style="background:#FF9800"></div><div class="tok-name">Warning / ERROR</div><div class="tok-val">#FF9800</div></div>
+    <div class="tok-row"><div class="swatch" style="background:#9E9E9E"></div><div class="tok-name">Disconnected</div><div class="tok-val">#9E9E9E</div></div>
+    <div class="tok-row"><div class="swatch" style="background:#F5F5F5"></div><div class="tok-name">Background</div><div class="tok-val">#F5F5F5</div></div>
+    <div class="tok-row"><div class="swatch" style="background:#FFFFFF"></div><div class="tok-name">Surface / Card</div><div class="tok-val">#FFFFFF</div></div>
+    <h3 style="margin-top:20px;">Type & shape</h3>
+    <div class="tok-row"><div class="tok-name">Display / headings</div><div class="tok-val">Roboto Bold/900</div></div>
+    <div class="tok-row"><div class="tok-name">Body / UI text</div><div class="tok-val">Inter 400–600</div></div>
+    <div class="tok-row"><div class="tok-name">Mono / data</div><div class="tok-val">Roboto Mono</div></div>
+    <div class="tok-row"><div class="tok-name">Card radius</div><div class="tok-val">8dp</div></div>
+    <div class="tok-row"><div class="tok-name">Elevation</div><div class="tok-val">2dp cards</div></div>
+    <p class="note">Every screen below is a 1:1 behavioral mock of the fragment/activity it represents — MainActivity + DashboardFragment, DeviceControlActivity, FloorPlanActivity, ReportingActivity, SettingsFragment. Status chip colors, icon set, and spacing all match the tokens above so XML dimens/colors.xml can be lifted directly.</p>
+  </div>
+</div>
+
+<script>
+/* ---------------- DATA ---------------- */
+const FLOORS = [
+  {
+    name:"Ground Floor", grid:4,
+    devices:[
+      {id:1, name:"Living Room Light", type:"LIGHT", status:"ON", x:1,y:1, brightness:72, sched:true, onTime:"18:00", offTime:"23:30", colorTemp:"NEUTRAL", sessionOn:"1h 12m", totalOn:"48h 20m", sessionCount:6, lastActive:"12 min ago", daysAgo:0, energy:"2.9 kWh"},
+      {id:2, name:"Kitchen Outlet", type:"OUTLET", status:"OFF", x:3,y:1, sessionOn:"0m", totalOn:"22h 05m", sessionCount:14, lastActive:"3 hrs ago", daysAgo:0, energy:"3.5 kWh"},
+      {id:3, name:"Utility Iron", type:"IRON", status:"ON", x:2,y:3, maxDuration:30, elapsed:"08:42", totalOn:"5h 40m", sessionOn:"8m", sessionCount:9, lastActive:"Now", daysAgo:0, safety:true, energy:"6.8 kWh"},
+      {id:4, name:"Front Door Camera", type:"CAMERA", status:"ON", x:0,y:0, streamUrl:"rtsp://192.168.1.42:554/stream1", recording:true, lastSnapshot:"2 min ago", sessionOn:"—", totalOn:"—", sessionCount:0, lastActive:"2 min ago", daysAgo:0, energy:"0.4 kWh"},
+      {id:5, name:"Hallway Switch Panel", type:"MULTI_SWITCH", status:"OFF", x:3,y:3, subswitches:[{n:"Ceiling Light",on:false},{n:"Wall Sconce",on:true},{n:"Fan",on:false}], sessionOn:"22m", totalOn:"9h 10m", sessionCount:5, lastActive:"1 day ago", daysAgo:1, energy:"1.1 kWh"},
+      {id:6, name:"Garage Light", type:"LIGHT", status:"DISCONNECTED", x:0,y:3, brightness:0, sched:false, onTime:"19:00", offTime:"06:00", colorTemp:"COOL", sessionOn:"0m", totalOn:"3h 12m", sessionCount:2, lastActive:"6 days ago", daysAgo:6, energy:"0.2 kWh"},
+      {id:7, name:"Dining Outlet", type:"OUTLET", status:"ERROR", x:1,y:2, sessionOn:"0m", totalOn:"11h 44m", sessionCount:7, lastActive:"5 hrs ago", daysAgo:0, energy:"1.8 kWh"},
+    ]
+  },
+  {
+    name:"First Floor", grid:3,
+    devices:[
+      {id:8, name:"Master Bedroom Light", type:"LIGHT", status:"ON", x:0,y:0, brightness:40, sched:true, onTime:"21:00", offTime:"07:00", colorTemp:"WARM", sessionOn:"45m", totalOn:"61h 02m", sessionCount:20, lastActive:"Now", daysAgo:0, energy:"3.7 kWh"},
+      {id:9, name:"Bathroom Outlet", type:"OUTLET", status:"OFF", x:2,y:0, sessionOn:"0m", totalOn:"4h 18m", sessionCount:11, lastActive:"2 days ago", daysAgo:2, energy:"0.6 kWh"},
+      {id:10, name:"Study Room Iron", type:"IRON", status:"OFF", x:1,y:1, maxDuration:20, elapsed:"00:00", totalOn:"2h 30m", sessionOn:"0m", sessionCount:3, lastActive:"9 days ago", daysAgo:9, safety:false, energy:"3.0 kWh"},
+      {id:11, name:"Balcony Camera", type:"CAMERA", status:"ERROR", x:2,y:2, streamUrl:"rtsp://192.168.1.51:554/stream1", recording:false, lastSnapshot:"1 hr ago", sessionOn:"—", totalOn:"—", sessionCount:0, lastActive:"1 hr ago", daysAgo:0, energy:"0.1 kWh"},
+      {id:12, name:"Kids Room Switch Panel", type:"MULTI_SWITCH", status:"ON", x:0,y:2, subswitches:[{n:"Reading Lamp",on:true},{n:"Night Light",on:true}], sessionOn:"3h 02m", totalOn:"30h 00m", sessionCount:15, lastActive:"Now", daysAgo:0, energy:"3.6 kWh"},
+    ]
+  }
+];
+
+const NOTIFICATIONS = [
+  {id:1, type:"ERROR", title:"Dining Outlet — Error", msg:"The outlet reported a fault and stopped responding.", time:"5 hrs ago", read:false},
+  {id:2, type:"WARNING", title:"Utility Iron — Safety alert", msg:"Iron has been ON for 8m 42s, approaching the max duration limit.", time:"12 min ago", read:false},
+  {id:3, type:"DISCONNECTED", title:"Garage Light — Disconnected", msg:"Device has been offline for 6 days.", time:"6 days ago", read:false},
+  {id:4, type:"ERROR", title:"Balcony Camera — Error", msg:"Camera stream dropped, last snapshot 1 hr ago.", time:"1 hr ago", read:true},
+  {id:5, type:"INFO", title:"Auto sync complete", msg:"All device states synced with Firebase.", time:"2 min ago", read:true},
+];
+const NOTIF_COLOR = { ERROR:"var(--warning)", WARNING:"var(--warning)", DISCONNECTED:"var(--grey)", INFO:"var(--primary)" };
+
+const ICONS = { LIGHT:"💡", OUTLET:"🔌", IRON:"🔥", CAMERA:"📷", MULTI_SWITCH:"🔀" };
+const ICON_BG = { LIGHT:"#FFF3D6", OUTLET:"#DCEFFF", IRON:"#FFE3DC", CAMERA:"#E6E1FF", MULTI_SWITCH:"#DFF7EF" };
+const STATUS_COLOR = { ON:"var(--success)", OFF:"var(--danger)", ERROR:"var(--warning)", DISCONNECTED:"var(--grey)" };
+
+/* ---------------- STATE ---------------- */
+const state = {
+  user: { name: "John Doe", email: "johndoe@example.com" },
+  screen:"login",
+  activeTab:"dashboard",
+  floorIdx:0,
+  selectedDeviceId:null,
+  detailsDeviceId:null,
+  notifReturnScreen:"dashboard",
+  hasUnreadNotifications: NOTIFICATIONS.some(n=>!n.read),
+  previewType:null,
+  reportFilter:"today",
+  reportFloorIdx:"all",
+  settings:{ notifications:true, safety:true, autoSync:true, darkMode:false, ironMax:30, powerWarn:1800, firebase:"Connected", lastSync:"2 min ago" }
+};
+const TAB_KEYS = ["login","signup","profile","dashboard","floorPlan","reports","settings"];
+
+const TABS = [
+  {k:"login", label:"Login/Auth"},
+  {k:"dashboard", label:"1 · Dashboard"},
+  {k:"deviceControl", label:"2 · Device Control"},
+  {k:"floorPlan", label:"3 · Floor Plans"},
+  {k:"reports", label:"4 · Reports"},
+  {k:"settings", label:"5 · Settings"},
+];
+
+function currentFloor(){ return FLOORS[state.floorIdx]; }
+function allDevices(){ return FLOORS.flatMap(f=>f.devices); }
+function findDevice(id){ return allDevices().find(d=>d.id===id); }
+
+function go(screen, opts={}){
+  state.screen = screen;
+  if(TAB_KEYS.includes(screen) && !['login','signup','profile'].includes(screen)) {
+    state.activeTab = screen;
+  }
+  if(opts.deviceId!==undefined) state.selectedDeviceId = opts.deviceId;
+  state.detailsDeviceId = null;
+  render();
+}
+
+function setDeviceStatus(id, status, evt){
+  if(evt) evt.stopPropagation();
+  const d = findDevice(id);
+  if(d.status==="DISCONNECTED" || d.status==="ERROR") return;
+  d.status = status;
+  render();
+}
+
+function cardSwitchToggle(id, evt){
+  if(evt) evt.stopPropagation();
+  const d = findDevice(id);
+  if(d.status==="DISCONNECTED" || d.status==="ERROR") return;
+  d.status = d.status==="ON" ? "OFF" : "ON";
+  render();
+}
+
+function openDetails(id, evt){
+  if(evt) evt.stopPropagation();
+  state.detailsDeviceId = id;
+  render();
+}
+function closeDetails(evt){
+  if(evt) evt.stopPropagation();
+  state.detailsDeviceId = null;
+  render();
+}
+function openFullControlFromModal(id){
+  state.previewType = findDevice(id).type;
+  state.detailsDeviceId = null;
+  go("deviceControl", {deviceId:id});
+}
+
+/* ---------------- ICONS (nav) ---------------- */
+const NAV_SVG = {
+  dashboard:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 13h6V4H4v9zm0 7h6v-5H4v5zm10 0h6V11h-6v9zm0-16v5h6V4h-6z"/></svg>',
+  floorPlan:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 3h8v8H3V3zm10 0h8v5h-8V3zm0 7h8v11h-8V10zM3 13h8v8H3v-8z"/></svg>',
+  reports:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M5 9h3v11H5V9zm6-5h3v16h-3V4zm6 8h3v8h-3v-8z"/></svg>',
+  settings:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M19.14 12.94a7.14 7.14 0 000-1.88l2.03-1.58a.5.5 0 00.12-.64l-1.92-3.32a.5.5 0 00-.6-.22l-2.39.96a7.3 7.3 0 00-1.63-.94l-.36-2.54a.5.5 0 00-.5-.42h-3.84a.5.5 0 00-.5.42l-.36 2.54c-.59.24-1.14.56-1.63.94l-2.39-.96a.5.5 0 00-.6.22L2.7 8.84a.5.5 0 00.12.64l2.03 1.58a7.14 7.14 0 000 1.88L2.82 14.5a.5.5 0 00-.12.64l1.92 3.32c.14.24.42.32.6.22l2.39-.96c.49.38 1.04.7 1.63.94l.36 2.54c.05.24.26.42.5.42h3.84c.24 0 .45-.18.5-.42l.36-2.54c.59-.24 1.14-.56 1.63-.94l2.39.96c.24.1.46 0 .6-.22l1.92-3.32a.5.5 0 00-.12-.64l-2.03-1.56zM12 15.5A3.5 3.5 0 1112 8.5a3.5 3.5 0 010 7z"/></svg>',
+  back:'<svg viewBox="0 0 24 24" fill="white"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>',
+  bell:'<svg viewBox="0 0 24 24" fill="white"><path d="M12 22c1.1 0 2-.9 2-2h-4a2 2 0 002 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4a1.5 1.5 0 00-3 0v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/></svg>',
+  profile:'<svg viewBox="0 0 24 24" fill="white"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>'
+};
+
+/* ---------------- RENDER: AUTHENTICATION ---------------- */
+function renderLogin(){
+  return {
+    toolbar: '',
+    content: `
+      <div style="padding:40px 24px;display:flex;flex-direction:column;gap:20px;height:100%;justify-content:center;">
+          <div style="text-align:center;">
+              <h1 style="font-size:24px;margin:0 0 8px;font-family:'Roboto',sans-serif;color:var(--ink);">Welcome Back</h1>
+              <p style="color:var(--ink-soft);font-size:14px;margin:0;">Login to your account</p>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:12px;margin-top:16px;">
+              <div>
+                  <div class="field-label">Email</div>
+                  <input class="mini-input" style="padding:12px;font-size:14px;" type="email" placeholder="Enter email" id="loginEmail" />
+              </div>
+              <div>
+                  <div class="field-label">Password</div>
+                  <input class="mini-input" style="padding:12px;font-size:14px;" type="password" placeholder="Enter password" id="loginPassword" />
+              </div>
+              <button class="btn-primary" style="padding:14px;font-size:14px;margin-top:12px;" onclick="go('dashboard')">Login</button>
+          </div>
+          <div style="text-align:center;font-size:13px;color:var(--ink-soft);margin-top:16px;">
+              Don't have an account? <span style="color:var(--primary);font-weight:700;cursor:pointer;" onclick="go('signup')">Sign up</span>
+          </div>
+      </div>
+    `
+  };
+}
+
+function renderSignup(){
+  return {
+    toolbar: '',
+    content: `
+      <div style="padding:40px 24px;display:flex;flex-direction:column;gap:20px;height:100%;justify-content:center;">
+          <div style="text-align:center;">
+              <h1 style="font-size:24px;margin:0 0 8px;font-family:'Roboto',sans-serif;color:var(--ink);">Create Account</h1>
+              <p style="color:var(--ink-soft);font-size:14px;margin:0;">Join us to manage your smart home</p>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:12px;margin-top:16px;">
+              <div>
+                  <div class="field-label">Username</div>
+                  <input class="mini-input" style="padding:12px;font-size:14px;" type="text" placeholder="Enter username" />
+              </div>
+              <div>
+                  <div class="field-label">Email</div>
+                  <input class="mini-input" style="padding:12px;font-size:14px;" type="email" placeholder="Enter email" />
+              </div>
+              <div>
+                  <div class="field-label">Password</div>
+                  <input class="mini-input" style="padding:12px;font-size:14px;" type="password" placeholder="Enter password" />
+              </div>
+              <button class="btn-primary" style="padding:14px;font-size:14px;margin-top:12px;" onclick="go('dashboard')">Create Account</button>
+          </div>
+          <div style="text-align:center;font-size:13px;color:var(--ink-soft);margin-top:16px;">
+              Already have an account? <span style="color:var(--primary);font-weight:700;cursor:pointer;" onclick="go('login')">Login</span>
+          </div>
+      </div>
+    `
+  };
+}
+
+function renderProfile(){
+  return {
+    toolbar: `
+      <div class="toolbar">
+        <div class="back" onclick="go('dashboard')">${NAV_SVG.back}</div>
+        <div><h2 style="font-size:15px;">Profile</h2></div>
+      </div>
+    `,
+    content: `
+      <div style="padding:24px;">
+          <div style="text-align:center;margin-bottom:32px;margin-top:16px;">
+              <div style="width:80px;height:80px;border-radius:50%;background:var(--primary);color:#fff;font-size:32px;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;font-family:'Roboto',sans-serif;font-weight:700;">
+                  ${state.user.name.charAt(0)}
+              </div>
+              <h2 style="margin:0 0 4px;font-size:20px;font-family:'Roboto',sans-serif;color:var(--ink);">${state.user.name}</h2>
+              <div style="color:var(--ink-soft);font-size:14px;">${state.user.email}</div>
+          </div>
+          
+          <div class="card" style="display:flex;flex-direction:column;gap:1px;background:var(--line);padding:0;overflow:hidden;">
+              <div style="background:var(--card);padding:16px;display:flex;justify-content:space-between;cursor:pointer;">
+                  <span style="font-weight:600;font-size:14px;color:var(--ink);">Edit Profile</span>
+                  <span style="color:var(--ink-soft);">→</span>
+              </div>
+              <div style="background:var(--card);padding:16px;display:flex;justify-content:space-between;cursor:pointer;">
+                  <span style="font-weight:600;font-size:14px;color:var(--ink);">Change Password</span>
+                  <span style="color:var(--ink-soft);">→</span>
+              </div>
+          </div>
+
+          <button class="btn-primary" style="width:100%;padding:14px;background:var(--danger);margin-top:32px;font-size:14px;" onclick="go('login')">Logout</button>
+      </div>
+    `
+  }
+}
+
+/* ---------------- RENDER: DASHBOARD ---------------- */
+function renderDashboard(){
+  const f = currentFloor();
+  const onCount = f.devices.filter(d=>d.status==="ON").length;
+  return {
+    toolbar: `
+      <div class="toolbar">
+        <h2>Smart Home</h2>
+        <div style="display:flex;gap:12px;align-items:center;">
+          <div class="toolbar-notif" onclick="openNotifications(event)">
+            ${NAV_SVG.bell}
+            ${state.hasUnreadNotifications ? '<span class="notif-dot"></span>' : ''}
+          </div>
+          <div class="toolbar-notif" onclick="go('profile')">
+            ${NAV_SVG.profile}
+          </div>
+        </div>
+      </div>
+    `,
+    content: `
+      <div style="padding:12px 0 6px;display:flex;flex-direction:column;gap:12px;">
+        <div class="floor-select">
+          <div>
+            <div class="label">Select Floor</div>
+            <div class="value">${f.name}</div>
+          </div>
+          <select onchange="state.floorIdx=[...this.options].findIndex(o=>o.selected); render();">
+            ${FLOORS.map((fl,i)=>`<option ${i===state.floorIdx?'selected':''}>${fl.name}</option>`).join('')}
+          </select>
+          <span class="chev">▾</span>
+        </div>
+
+        <div class="stats-row">
+          <div class="stat-card"><div class="num">${onCount}</div><div class="lbl">Devices ON</div></div>
+          <div class="stat-card total"><div class="num">${f.devices.length}</div><div class="lbl">Total Devices</div></div>
+        </div>
+
+        <div class="section-title">
+          <h4>Devices</h4>
+          <span class="count">${f.devices.length} on this floor</span>
+        </div>
+        <div style="text-align:center;font-size:10px;color:var(--ink-soft);padding:0 20px 2px;">Tap a card to view details · use the switch to toggle directly</div>
+
+        <div class="device-grid">
+          ${f.devices.map(d=>`
+            <div class="device-card" onclick="openDetails(${d.id})">
+              <span class="chip ${d.status} status-abs"><span class="dot"></span>${d.status}</span>
+              <div class="icon-badge" style="background:${ICON_BG[d.type]}">${ICONS[d.type]}</div>
+              <div>
+                <div class="dname">${d.name}</div>
+                <div class="dtype">${d.type.replace('_',' ')}</div>
+              </div>
+              <div class="card-switch-row">
+                <span class="cs-label">Power</span>
+                <div class="switch ${d.status==='ON'?'on':''} ${(d.status==='DISCONNECTED'||d.status==='ERROR')?'disabled':''}" onclick="cardSwitchToggle(${d.id}, event)"><div class="knob"></div></div>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    `
+  };
+}
+
+function openNotifications(evt){
+  if(evt) evt.stopPropagation();
+  state.notifReturnScreen = state.screen;
+  state.screen = "notifications";
+  render();
+}
+function closeNotifications(evt){
+  if(evt) evt.stopPropagation();
+  go(state.notifReturnScreen);
+}
+function markAllNotificationsRead(evt){
+  if(evt) evt.stopPropagation();
+  NOTIFICATIONS.forEach(n=>n.read=true);
+  state.hasUnreadNotifications = false;
+  render();
+}
+function readNotification(id, evt){
+  if(evt) evt.stopPropagation();
+  const n = NOTIFICATIONS.find(x=>x.id===id);
+  if(n) n.read = true;
+  state.hasUnreadNotifications = NOTIFICATIONS.some(x=>!x.read);
+  render();
+}
+
+function renderNotifications(){
+  return {
+    toolbar: `
+      <div class="toolbar">
+        <div class="back" onclick="closeNotifications(event)">${NAV_SVG.back}</div>
+        <h2 style="font-size:15px;">Notifications</h2>
+        ${NOTIFICATIONS.length ? `<button class="notif-toolbar-action" onclick="markAllNotificationsRead(event)">Mark all as read</button>` : ''}
+      </div>
+    `,
+    content: `
+      <div class="notif-list">
+        ${NOTIFICATIONS.length ? NOTIFICATIONS.map(n=>`
+          <div class="notif-item ${!n.read?'unread':''}" onclick="readNotification(${n.id}, event)">
+            <div class="n-dot" style="background:${NOTIF_COLOR[n.type]}"></div>
+            <div>
+              <div class="n-title">${n.title}</div>
+              <div class="n-msg">${n.msg}</div>
+              <div class="n-time">${n.time}</div>
+            </div>
+          </div>
+        `).join('') : `<div class="notif-empty">No notifications</div>`}
+      </div>
+    `
+  };
+}
+
+function openDeviceControl(id){
+  state.previewType = findDevice(id).type;
+  go("deviceControl", {deviceId:id});
+}
+
+/* ---------------- DETAILS MODAL ---------------- */
+function safetySettingsBlock(d){
+  const durationField = `
+      <div>
+        <div class="field-label" style="margin-bottom:4px;">Iron max duration default (minutes)</div>
+        <input class="mini-input" type="number" value="${state.settings.ironMax}" oninput="state.settings.ironMax=this.value"/>
+      </div>`;
+  const powerField = `
+      <div>
+        <div class="field-label" style="margin-bottom:4px;">Max power warning threshold (watts)</div>
+        <input class="mini-input" type="number" value="${state.settings.powerWarn}" oninput="state.settings.powerWarn=this.value"/>
+      </div>`;
+
+  let fields = "";
+  if(d.type === "IRON") fields = durationField + powerField;
+  else if(d.type === "OUTLET" || d.type === "MULTI_SWITCH") fields = powerField;
+  else return ""; // not relevant for LIGHT / CAMERA
+
+  return `
+    <div class="card" style="margin-top:12px;box-shadow:none;border:1px solid var(--line);display:flex;flex-direction:column;gap:10px;">
+      <div class="field-label" style="margin:0;">Safety Settings</div>
+      ${fields}
+    </div>`;
+}
+
+function detailRowsFor(d){
+  const rows = [];
+  if(d.type==="LIGHT"){
+    rows.push(["Brightness", d.brightness+"%"], ["Color temperature", d.colorTemp], ["Scheduling", d.sched? d.onTime+" – "+d.offTime : "Off"]);
+  } else if(d.type==="IRON"){
+    rows.push(["Session timer", d.elapsed], ["Max duration", d.maxDuration+" min"], ["Safety alert", d.safety? "Active":"None"]);
+  } else if(d.type==="MULTI_SWITCH"){
+    const onCt = d.subswitches.filter(s=>s.on).length;
+    rows.push(["Sub-switches", d.subswitches.length], ["Currently on", onCt]);
+  } else if(d.type==="CAMERA"){
+    rows.push(["Recording", d.recording? "Enabled":"Disabled"], ["Last snapshot", d.lastSnapshot]);
+  } else if(d.type==="OUTLET"){
+    rows.push(["Session ON time", d.sessionOn], ["All-time ON", d.totalOn]);
+  }
+  rows.push(["Last active", d.lastActive]);
+  return rows;
+}
+
+function renderModal(){
+  const id = state.detailsDeviceId;
+  if(!id) return "";
+  const d = findDevice(id);
+  return `
+  <div class="modal-backdrop" onclick="closeDetails(event)"></div>
+  <div class="sheet">
+    <div class="handle"></div>
+    <div class="sheet-top">
+      <div class="icon-badge" style="background:${ICON_BG[d.type]}">${ICONS[d.type]}</div>
+      <div>
+        <div class="sheet-title">${d.name}</div>
+        <div class="sheet-type">${d.type.replace('_',' ')}</div>
+      </div>
+      <div class="sheet-right">
+        <div class="close-x" onclick="closeDetails(event)">✕</div>
+        <span class="chip ${d.status}"><span class="dot"></span>${d.status}</span>
+      </div>
+    </div>
+    <div class="detail-rows">
+      ${detailRowsFor(d).map(([l,v])=>`<div class="detail-row"><span class="dlabel">${l}</span><span class="dval">${v}</span></div>`).join('')}
+    </div>
+    <div class="power-row">
+      <span class="plabel">Power</span>
+      <div class="switch ${d.status==='ON'?'on':''} ${(d.status==='DISCONNECTED'||d.status==='ERROR')?'disabled':''}" onclick="cardSwitchToggle(${d.id}, event); openDetails(${d.id});"><div class="knob"></div></div>
+    </div>
+    ${safetySettingsBlock(d)}
+    <button class="full-control-btn" onclick="openFullControlFromModal(${d.id})">Open Full Control →</button>
+  </div>
+  `;
+}
+
+function bottomNav(active){
+  const items = [
+    {k:"dashboard", label:"Dashboard", icon:"dashboard"},
+    {k:"floorPlan", label:"Floor Plans", icon:"floorPlan"},
+    {k:"reports", label:"Reports", icon:"reports"},
+    {k:"settings", label:"Settings", icon:"settings"},
+  ];
+  return `<div class="bottom-nav">
+    ${items.map(it=>`
+      <div class="nav-item ${active===it.k?'active':''}" onclick="go('${it.k}')">
+        ${NAV_SVG[it.icon]}
+        <span>${it.label}</span>
+      </div>`).join('')}
+  </div>`;
+}
+
+/* ---------------- RENDER: DEVICE CONTROL ---------------- */
+function renderDeviceControl(){
+  const d = findDevice(state.selectedDeviceId) || allDevices()[0];
+  state.selectedDeviceId = d.id;
+  const ptype = state.previewType || d.type;
+
+  const dynamicCard = ({
+    LIGHT: lightCard(d),
+    IRON: ironCard(d),
+    MULTI_SWITCH: multiSwitchCard(d),
+    CAMERA: cameraCard(d),
+    OUTLET: `<div class="card" style="text-align:center;color:var(--ink-soft);font-size:12px;padding:20px;">No additional controls for outlets — see usage stats below.</div>`
+  })[ptype];
+
+  return {
+    toolbar: `
+      <div class="toolbar">
+        <div class="back" onclick="go('dashboard')">${NAV_SVG.back}</div>
+        <div><h2 style="font-size:15px;">Device Control</h2></div>
+      </div>
+    `,
+    content: `
+      <div class="section-pad">
+        <div class="dc-header">
+          <div class="icon-badge" style="background:${ICON_BG[d.type]}">${ICONS[d.type]}</div>
+          <h3>${d.name}</h3>
+          <div class="type">${d.type.replace('_',' ')}</div>
+          <span class="chip ${d.status}"><span class="dot"></span>${d.status}</span>
+        </div>
+
+        <div class="onoff-row">
+          <button class="onoff-btn ${d.status==='ON' ? 'on-btn':'inactive'}" ${(d.status==='DISCONNECTED'||d.status==='ERROR')?'disabled':''} onclick="d_setStatus(${d.id},'ON')">ON</button>
+          <button class="onoff-btn ${d.status==='OFF' ? 'off-btn':'inactive'}" ${(d.status==='DISCONNECTED'||d.status==='ERROR')?'disabled':''} onclick="d_setStatus(${d.id},'OFF')">OFF</button>
+        </div>
+
+        <div>
+          <div class="field-label" style="margin:0 0 6px 2px;">Preview card for device type</div>
+          <div class="type-chip-row" style="margin:0 0 4px;">
+            ${Object.keys(ICONS).map(t=>`<div class="tchip ${ptype===t?'active':''}" onclick="state.previewType='${t}';render();">${ICONS[t]} ${t.replace('_',' ')}</div>`).join('')}
+          </div>
+        </div>
+
+        ${dynamicCard}
+
+        <div class="card">
+          <div class="field-label">Usage Stats</div>
+          <div class="usage-bars">
+            <div class="ub">
+              <div class="val">${d.sessionOn}</div>
+              <div class="lbl2">This session</div>
+              <div class="bar-track"><div class="bar-fill" style="width:35%;"></div></div>
+            </div>
+            <div class="ub">
+              <div class="val">${d.totalOn}</div>
+              <div class="lbl2">All time</div>
+              <div class="bar-track"><div class="bar-fill" style="width:80%;background:var(--secondary);"></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    `
+  };
+}
+
+function d_setStatus(id, status){
+  const d = findDevice(id);
+  if(d.status==="DISCONNECTED" || d.status==="ERROR") return;
+  d.status = status;
+  render();
+}
+
+function lightCard(d){
+  return `
+  <div class="card" style="display:flex;flex-direction:column;gap:14px;">
+    <div>
+      <div class="row-between"><div class="field-label" style="margin:0;">Brightness</div><span style="font-weight:800;font-size:13px;color:var(--primary);">${d.brightness}%</span></div>
+      <input type="range" min="0" max="100" value="${d.brightness}" oninput="d.brightness=this.value" />
+    </div>
+    <div class="row-between">
+      <div>
+        <div style="font-size:13px;font-weight:600;color:var(--ink);">Scheduling</div>
+        <div style="font-size:10.5px;color:var(--ink-soft);">Set ON / OFF time</div>
+      </div>
+      <div class="switch ${d.sched?'on':''}" onclick="d.sched=!d.sched;render();"><div class="knob"></div></div>
+    </div>
+    ${d.sched ? `
+    <div style="display:flex;gap:10px;">
+      <div style="flex:1;"><div class="field-label">ON time</div><input class="mini-input" type="time" value="${d.onTime}"/></div>
+      <div style="flex:1;"><div class="field-label">OFF time</div><input class="mini-input" type="time" value="${d.offTime}"/></div>
+    </div>` : ``}
+    <div>
+      <div class="field-label">Color Temperature</div>
+      <div class="seg3">
+        ${["WARM","NEUTRAL","COOL"].map(t=>`<button class="${d.colorTemp===t?'active':''}" onclick="d.colorTemp='${t}';render();">${t}</button>`).join('')}
+      </div>
+    </div>
+  </div>`;
+}
+
+function ironCard(d){
+  const showAlert = d.safety;
+  return `
+  <div class="card" style="display:flex;flex-direction:column;gap:12px;">
+    <div>
+      <div class="field-label">Max ON Duration (minutes)</div>
+      <div style="display:flex;gap:8px;">
+        <input class="mini-input" type="number" value="${d.maxDuration}" />
+        <button class="btn-primary" onclick="alert('Duration saved (demo)')">Set Duration</button>
+      </div>
+    </div>
+    ${showAlert ? `<div class="banner">⚠️ Safety alert: this iron has been ON for ${d.elapsed} — approaching the max duration limit.</div>` : ``}
+    <div class="row-between">
+      <div style="font-size:13px;font-weight:600;color:var(--ink);">Session timer</div>
+      <div class="mono" style="font-size:14px;font-weight:700;">${d.elapsed}</div>
+    </div>
+  </div>`;
+}
+
+function multiSwitchCard(d){
+  return `
+  <div class="card">
+    <div class="field-label">Sub-switches</div>
+    ${d.subswitches.map((s,i)=>`
+      <div class="sub-switch-row">
+        <span>${s.n}</span>
+        <div class="switch ${s.on?'on':''}" onclick="d.subswitches[${i}].on=!d.subswitches[${i}].on;render();"><div class="knob"></div></div>
+      </div>
+    `).join('')}
+  </div>`;
+}
+
+function cameraCard(d){
+  return `
+  <div class="card" style="display:flex;flex-direction:column;gap:12px;">
+    <div>
+      <div class="field-label">Stream URL</div>
+      <div class="mono">${d.streamUrl}</div>
+    </div>
+    <div class="row-between">
+      <div style="font-size:13px;font-weight:600;color:var(--ink);">Recording enabled</div>
+      <div class="switch ${d.recording?'on':''}" onclick="d.recording=!d.recording;render();"><div class="knob"></div></div>
+    </div>
+    <div class="row-between">
+      <div style="font-size:11.5px;color:var(--ink-soft);font-weight:600;">Last snapshot</div>
+      <div style="font-size:12px;font-weight:700;color:var(--ink);">${d.lastSnapshot}</div>
+    </div>
+  </div>`;
+}
+
+/* ---------------- RENDER: FLOOR PLAN ---------------- */
+function renderFloorPlan(){
+  const f = currentFloor();
+  const step = 100/f.grid;
+  return {
+    toolbar: `
+      <div class="toolbar">
+        <div class="back" onclick="go('dashboard')">${NAV_SVG.back}</div>
+        <div><h2 style="font-size:15px;">Floor Plans</h2></div>
+      </div>
+    `,
+    content: `
+      <div class="floor-info">
+        <div class="fname">${f.name}</div>
+        <div class="fgrid">${f.grid}×${f.grid} grid</div>
+      </div>
+      <div class="floor-select" style="margin:10px 14px 0;">
+        <div><div class="label">Select Floor</div><div class="value">${f.name}</div></div>
+        <select onchange="state.floorIdx=[...this.options].findIndex(o=>o.selected); render();">
+          ${FLOORS.map((fl,i)=>`<option ${i===state.floorIdx?'selected':''}>${fl.name}</option>`).join('')}
+        </select>
+        <span class="chev">▾</span>
+      </div>
+      <div class="blueprint" style="--gcols:${f.grid};">
+        ${f.devices.map(d=>`
+          <div class="marker" title="${d.name}" style="left:${(d.x+0.5)*step}%; top:${(d.y+0.5)*step}%; background:${STATUS_COLOR[d.status]};" onclick="openDeviceControl(${d.id})">
+            ${ICONS[d.type]}
+          </div>
+        `).join('')}
+      </div>
+      <div class="legend">
+        <div class="li"><div class="dotb" style="background:var(--success)"></div>ON</div>
+        <div class="li"><div class="dotb" style="background:var(--danger)"></div>OFF</div>
+        <div class="li"><div class="dotb" style="background:var(--warning)"></div>ERROR</div>
+        <div class="li"><div class="dotb" style="background:var(--grey)"></div>DISCONNECTED</div>
+      </div>
+      <div style="text-align:center;font-size:10px;color:var(--ink-soft);padding:2px 24px 16px;">Tap a marker to open Device Control</div>
+    `
+  };
+}
+
+/* ---------------- RENDER: REPORTS ---------------- */
+function renderReports(){
+  const filters = {today:0, week:7, month:30, all:Infinity};
+  const max = filters[state.reportFilter];
+  const floorDevices = state.reportFloorIdx==="all" ? allDevices() : FLOORS[state.reportFloorIdx].devices;
+  const list = floorDevices.filter(d=>d.daysAgo<=max);
+  const floorLabel = state.reportFloorIdx==="all" ? "All Floors" : FLOORS[state.reportFloorIdx].name;
+  return {
+    toolbar: `
+      <div class="toolbar">
+        <div class="back" onclick="go('dashboard')">${NAV_SVG.back}</div>
+        <div><h2 style="font-size:15px;">Usage Reports</h2></div>
+      </div>
+    `,
+    content: `
+      <div class="floor-select" style="margin:14px 14px 0;">
+        <div><div class="label">Floor</div><div class="value">${floorLabel}</div></div>
+        <select onchange="state.reportFloorIdx=this.value==='all'?'all':Number(this.value); render();">
+          <option value="all" ${state.reportFloorIdx==="all"?'selected':''}>All Floors</option>
+          ${FLOORS.map((fl,i)=>`<option value="${i}" ${state.reportFloorIdx===i?'selected':''}>${fl.name}</option>`).join('')}
+        </select>
+        <span class="chev">▾</span>
+      </div>
+      <div class="filter-row">
+        ${[["today","Today"],["week","This Week"],["month","This Month"]].map(([k,l])=>`
+          <button class="${state.reportFilter===k?'active':''}" onclick="state.reportFilter='${k}';render();">${l}</button>
+        `).join('')}
+      </div>
+      <div style="padding-bottom:16px;">
+        ${list.length ? list.map(d=>`
+          <div class="report-card">
+            <div class="rtop">
+              <div class="rname-wrap">
+                <div class="ricon" style="background:${ICON_BG[d.type]}">${ICONS[d.type]}</div>
+                <div class="rname">${d.name}</div>
+              </div>
+              <span class="chip ${d.status}"><span class="dot"></span>${d.status}</span>
+            </div>
+            <div class="rstats">
+              <div class="rstat"><span class="rlabel">Total ON Time</span><span class="rvalue">${d.totalOn}</span></div>
+              <div class="rstat"><span class="rlabel">Toggles</span><span class="rvalue">${d.sessionCount}</span></div>
+              <div class="rstat"><span class="rlabel">Energy Used</span><span class="rvalue">${d.energy}</span></div>
+              <div class="rstat"><span class="rlabel">Last Active</span><span class="rvalue">${d.lastActive}</span></div>
+            </div>
+          </div>
+        `).join('') : `<div class="empty-state">No activity in this period.</div>`}
+      </div>
+    `
+  };
+}
+
+/* ---------------- RENDER: SETTINGS ---------------- */
+function renderSettings(){
+  const s = state.settings;
+  return {
+    toolbar: `
+      <div class="toolbar"><h2>Settings</h2></div>
+    `,
+    content: `
+      <div style="padding-top:8px;">
+        <div class="settings-group">
+          <div class="gtitle">Sync status</div>
+          <div class="card" style="display:flex;flex-direction:column;gap:8px;">
+            <div class="row-between">
+              <span style="font-size:13px;font-weight:600;color:var(--ink);">Firebase</span>
+              <span class="status-pill ${s.firebase==='Connected'?'connected':'disc'}">● ${s.firebase}</span>
+            </div>
+            <div class="row-between">
+              <span style="font-size:11.5px;color:var(--ink-soft);">Last sync</span>
+              <span style="font-size:12px;font-weight:700;color:var(--ink);">${s.lastSync}</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="settings-group">
+          <div class="gtitle">General</div>
+          <div class="settings-group card-wrap">
+            ${settingRow("Notifications enabled","Push alerts for device status changes", s.notifications, "notifications")}
+            ${settingRow("Safety alerts","Alerts when iron exceeds max ON duration", s.safety, "safety")}
+            ${settingRow("Auto sync","Background Firebase sync every 15 minutes", s.autoSync, "autoSync")}
+            ${settingRow("Dark mode","Switch the app to a dark color scheme", s.darkMode, "darkMode")}
+          </div>
+        </div>
+      </div>
+    `
+  };
+}
+
+function settingRow(title, desc, val, key){
+  return `
+  <div class="setting-row">
+    <div><div class="stitle">${title}</div><div class="sdesc">${desc}</div></div>
+    <div class="switch ${val?'on':''}" onclick="toggleSetting('${key}')"><div class="knob"></div></div>
+  </div>`;
+}
+function toggleSetting(key){
+  state.settings[key] = !state.settings[key];
+  if(key==='darkMode'){
+    document.getElementById('phoneScreen').setAttribute('data-theme', state.settings.darkMode ? 'dark':'light');
+  }
+  render();
+}
+
+/* ---------------- MASTER RENDER ---------------- */
+function render(){
+  const tabsEl = document.getElementById('tabs');
+  tabsEl.innerHTML = TABS.map(t=>`<button class="${state.screen===t.k?'active':''}" onclick="go('${t.k}')">${t.label}</button>`).join('');
+
+  const screenData = {
+    login: renderLogin,
+    signup: renderSignup,
+    profile: renderProfile,
+    dashboard: renderDashboard,
+    deviceControl: renderDeviceControl,
+    floorPlan: renderFloorPlan,
+    reports: renderReports,
+    settings: renderSettings,
+    notifications: renderNotifications
+  }[state.screen]();
+
+  document.getElementById('toolbarFixed').innerHTML = screenData.toolbar || '';
+  document.getElementById('contentArea').innerHTML = screenData.content || '';
+
+  // Bottom Navigation
+  if(['login', 'signup', 'profile'].includes(state.screen)) {
+    document.getElementById('bottomNavFixed').innerHTML = '';
+  } else {
+    document.getElementById('bottomNavFixed').innerHTML = bottomNav(state.activeTab);
+  }
+
+  const modalLayer = document.getElementById('modalLayer');
+  const modalHtml = renderModal();
+  modalLayer.innerHTML = modalHtml;
+  modalLayer.classList.toggle('open', !!modalHtml);
+  
+  // Re-apply theme in case it was reset by full re-renders of the container
+  document.getElementById('phoneScreen').setAttribute('data-theme', state.settings.darkMode ? 'dark':'light');
+}
+
+render();
+</script>
+</body>
+</html>

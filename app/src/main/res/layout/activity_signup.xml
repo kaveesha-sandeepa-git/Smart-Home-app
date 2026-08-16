@@ -12,7 +12,7 @@
         android:orientation="vertical"
         android:gravity="center_vertical"
         android:padding="32dp"
-        android:minHeight="500dp">
+        android:minHeight="560dp">
 
         <!-- App icon -->
         <ImageView
@@ -28,7 +28,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:text="Welcome Back"
+            android:text="Create Account"
             android:textColor="@color/ink"
             android:textSize="24sp"
             android:textStyle="bold"
@@ -39,10 +39,41 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:text="Login to your account"
+            android:text="Join us to manage your smart home"
             android:textColor="@color/ink_soft"
             android:textSize="14sp"
             android:layout_marginBottom="32dp" />
+
+        <!-- Username -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="USERNAME"
+            android:textSize="11sp"
+            android:textStyle="bold"
+            android:letterSpacing="0.05"
+            android:textColor="@color/ink_soft"
+            android:layout_marginBottom="6dp" />
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            app:boxCornerRadiusBottomEnd="8dp"
+            app:boxCornerRadiusBottomStart="8dp"
+            app:boxCornerRadiusTopEnd="8dp"
+            app:boxCornerRadiusTopStart="8dp"
+            app:boxStrokeColor="@color/primary"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/et_username"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textPersonName"
+                android:hint="Enter your username"
+                android:textColor="@color/ink" />
+        </com.google.android.material.textfield.TextInputLayout>
 
         <!-- Email -->
         <TextView
@@ -103,16 +134,16 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="textPassword"
-                android:hint="Enter your password"
+                android:hint="Create a password"
                 android:textColor="@color/ink" />
         </com.google.android.material.textfield.TextInputLayout>
 
-        <!-- Login button -->
+        <!-- Create Account button -->
         <com.google.android.material.button.MaterialButton
-            android:id="@+id/btn_login"
+            android:id="@+id/btn_create_account"
             android:layout_width="match_parent"
             android:layout_height="52dp"
-            android:text="Login"
+            android:text="Create Account"
             android:textSize="15sp"
             android:textStyle="bold"
             app:cornerRadius="8dp"
@@ -127,7 +158,7 @@
             android:layout_marginTop="16dp"
             android:visibility="gone" />
 
-        <!-- Sign up link -->
+        <!-- Login link -->
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -138,15 +169,15 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Don't have an account? "
+                android:text="Already have an account? "
                 android:textColor="@color/ink_soft"
                 android:textSize="13sp" />
 
             <TextView
-                android:id="@+id/btn_register"
+                android:id="@+id/btn_login_link"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Sign up"
+                android:text="Login"
                 android:textColor="@color/primary"
                 android:textStyle="bold"
                 android:textSize="13sp"

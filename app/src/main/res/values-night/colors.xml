@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Dark theme surface/ink token overrides -->
+    <color name="bg">#121417</color>
+    <color name="card">#1D2024</color>
+    <color name="ink">#F1F2F4</color>
+    <color name="ink_soft">#9AA0A6</color>
+    <color name="line">#2B2F34</color>
+
+    <!-- Legacy aliases for night -->
+    <color name="background_primary">#121417</color>
+    <color name="background_secondary">#1D2024</color>
+    <color name="text_primary">#F1F2F4</color>
+    <color name="text_secondary">#9AA0A6</color>
+</resources>

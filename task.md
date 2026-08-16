@@ -1,0 +1,28 @@
+- `[/]` **Theming & Styles**
+  - `[ ]` Update `res/values/colors.xml` with new tokens
+  - `[ ]` Create `res/values-night/colors.xml` for dark mode overrides
+  - `[ ]` Update `res/values/themes.xml` for Material components
+  - `[ ]` Update `res/values/styles.xml` for cards and buttons
+- `[ ]` **Vector Drawables**
+  - `[ ]` Add common icons (profile, bell, devices, etc.) to `res/drawable`
+- `[ ]` **Authentication Flow**
+  - `[ ]` Overhaul `activity_login.xml`
+  - `[ ]` Update `LoginActivity.kt`
+  - `[ ]` Create `activity_signup.xml` and `SignupActivity.kt`
+- `[ ]` **Profile Screen**
+  - `[ ]` Create `activity_profile.xml` and `ProfileActivity.kt`
+- `[ ]` **Main Navigation Shell**
+  - `[ ]` Update `activity_main.xml` to include custom toolbar and bottom nav integration
+- `[ ]` **Dashboard & Grid**
+  - `[ ]` Update `fragment_dashboard.xml`
+  - `[ ]` Overhaul `item_devices.xml` card
+- `[ ]` **Device Control**
+  - `[ ]` Redesign `activity_device_control.xml`
+- `[ ]` **Floor Plans & Reports**
+  - `[ ]` Update `activity_floor_plan.xml`
+  - `[ ]` Update `activity_reporting.xml` and `item_device_report.xml`
+- `[ ]` **Settings & Dark Mode**
+  - `[ ]` Update `fragment_settings.xml` (include App Version)
+  - `[ ]` Update `SettingsFragment.kt` for instant dark mode switching
+- `[ ]` **Verification**
+  - `[ ]` Build project and resolve compilation errors

@@ -1,31 +1,49 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- Brand colors (constant across themes) -->
     <color name="primary">#2196F3</color>
     <color name="primary_dark">#1976D2</color>
     <color name="secondary">#03DAC6</color>
-    <color name="accent">#FF4081</color>
 
-    <color name="background_primary">#F5F5F5</color>
-    <color name="background_secondary">#FFFFFF</color>
-
-    <color name="text_primary">#212121</color>
-    <color name="text_secondary">#757575</color>
-
+    <!-- Semantic colors (constant across themes) -->
     <color name="success">#4CAF50</color>
     <color name="danger">#F44336</color>
     <color name="warning">#FF9800</color>
-    <color name="info">#2196F3</color>
+    <color name="grey">#9E9E9E</color>
 
+    <!-- Status chip colors -->
     <color name="status_on">#4CAF50</color>
     <color name="status_off">#F44336</color>
     <color name="status_error">#FF9800</color>
     <color name="status_disconnected">#9E9E9E</color>
 
+    <!-- Status chip background colors (with alpha) -->
+    <color name="status_on_bg">#224CAF50</color>
+    <color name="status_off_bg">#22F44336</color>
+    <color name="status_error_bg">#22FF9800</color>
+    <color name="status_disc_bg">#229E9E9E</color>
+
+    <!-- Light theme surface/ink tokens -->
+    <color name="bg">#F5F5F5</color>
+    <color name="card">#FFFFFF</color>
+    <color name="ink">#1A1C1E</color>
+    <color name="ink_soft">#5F6368</color>
+    <color name="line">#E6E8EB</color>
+
+    <!-- Legacy aliases (keep for existing XML references) -->
+    <color name="background_primary">#F5F5F5</color>
+    <color name="background_secondary">#FFFFFF</color>
+    <color name="text_primary">#1A1C1E</color>
+    <color name="text_secondary">#5F6368</color>
+
+    <!-- Misc -->
     <color name="white">#FFFFFF</color>
     <color name="black">#000000</color>
-    <color name="purple_200">#FFBB86FC</color>
-    <color name="purple_500">#FF6200EE</color>
-    <color name="purple_700">#FF3700B3</color>
-    <color name="teal_200">#FF03DAC5</color>
-    <color name="teal_700">#FF018786</color>
+
+    <!-- Icon badge backgrounds -->
+    <color name="badge_light_bg">#FFF3D6</color>
+    <color name="badge_outlet_bg">#DCEFFF</color>
+    <color name="badge_iron_bg">#FFE3DC</color>
+    <color name="badge_camera_bg">#E6E1FF</color>
+    <color name="badge_switch_bg">#DFF7EF</color>
 </resources>

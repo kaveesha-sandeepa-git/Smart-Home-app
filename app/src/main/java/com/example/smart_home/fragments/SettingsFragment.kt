@@ -5,10 +5,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import android.widget.Toast
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.widget.SwitchCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import com.example.smart_home.BuildConfig
 import com.example.smart_home.R
 import com.example.smart_home.utils.AppLogger
 import com.example.smart_home.utils.PreferencesManager
@@ -59,6 +60,9 @@ class SettingsFragment : Fragment() {
         darkModeToggle = view.findViewById(R.id.dark_mode_toggle)
         firebaseStatus = view.findViewById(R.id.firebase_status)
         lastSyncTime = view.findViewById(R.id.last_sync_time)
+
+        // Set app version (reads from BuildConfig)
+        view.findViewById<TextView>(R.id.tv_app_version)?.text = BuildConfig.VERSION_NAME
     }
 
     private fun loadPreferences() {
@@ -71,31 +75,29 @@ class SettingsFragment : Fragment() {
 
         val lastSync = preferencesManager.lastSyncTime
         if (lastSync > 0) {
-            lastSyncTime.text = "Last sync: ${formatTimestamp(lastSync)}"
+            lastSyncTime.text = formatTimestamp(lastSync)
         } else {
             lastSyncTime.text = "Never synced"
         }
     }
 
     private fun observeViewModel() {
-        // Observe Firebase connection status
         viewModel.syncStatus.observe(viewLifecycleOwner) { isConnected ->
             isConnected?.let {
                 if (it) {
-                    firebaseStatus.text = "Connected"
+                    firebaseStatus.text = "● Connected"
                     firebaseStatus.setTextColor(resources.getColor(R.color.status_on, null))
                 } else {
-                    firebaseStatus.text = "Disconnected"
+                    firebaseStatus.text = "● Disconnected"
                     firebaseStatus.setTextColor(resources.getColor(R.color.status_disconnected, null))
                 }
             }
         }
 
-        // Observe safety alerts
         viewModel.safetyAlerts.observe(viewLifecycleOwner) { alert ->
             if (!alert.isNullOrEmpty() && safetyAlertsToggle.isChecked) {
                 AppLogger.w(TAG, "Safety Alert: $alert")
-                Toast.makeText(requireContext(), alert, Toast.LENGTH_LONG).show()
+                android.widget.Toast.makeText(requireContext(), alert, android.widget.Toast.LENGTH_LONG).show()
             }
         }
     }
@@ -103,23 +105,24 @@ class SettingsFragment : Fragment() {
     private fun setupListeners() {
         notificationsToggle.setOnCheckedChangeListener { _, isChecked ->
             preferencesManager.notificationsEnabled = isChecked
-            AppLogger.d(TAG, "Notifications: ${if (isChecked) "Enabled" else "Disabled"}")
         }
 
         safetyAlertsToggle.setOnCheckedChangeListener { _, isChecked ->
             preferencesManager.safetyAlertsEnabled = isChecked
-            AppLogger.d(TAG, "Safety Alerts: ${if (isChecked) "Enabled" else "Disabled"}")
         }
 
         autoSyncToggle.setOnCheckedChangeListener { _, isChecked ->
             preferencesManager.autoSyncEnabled = isChecked
-            AppLogger.d(TAG, "Auto Sync: ${if (isChecked) "Enabled" else "Disabled"}")
         }
 
         darkModeToggle.setOnCheckedChangeListener { _, isChecked ->
             preferencesManager.darkModeEnabled = isChecked
-            AppLogger.d(TAG, "Dark Mode: ${if (isChecked) "Enabled" else "Disabled"}")
-            Toast.makeText(requireContext(), "Restart app to apply theme", Toast.LENGTH_SHORT).show()
+            // Apply immediately — no restart needed
+            if (isChecked) {
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+            } else {
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+            }
         }
     }
 

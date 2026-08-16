@@ -1,11 +1,9 @@
 package com.example.smart_home.activities
 
-import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import com.example.smart_home.R
@@ -24,6 +22,7 @@ class MainActivity : AppCompatActivity() {
 
         toolbar = findViewById(R.id.toolbar)
         setSupportActionBar(toolbar)
+        supportActionBar?.title = "Smart Home"
 
         bottomNav = findViewById(R.id.bottom_navigation)
 
@@ -38,24 +37,24 @@ class MainActivity : AppCompatActivity() {
         bottomNav.setOnItemSelectedListener { item ->
             when (item.itemId) {
                 R.id.nav_dashboard -> {
+                    supportActionBar?.title = "Smart Home"
                     supportFragmentManager.beginTransaction()
                         .replace(R.id.fragment_container, DashboardFragment())
-                        .addToBackStack(null)
                         .commit()
                     true
                 }
                 R.id.nav_floors -> {
                     startActivity(Intent(this, FloorPlanActivity::class.java))
-                    true
+                    false // don't change selected state for activities
                 }
                 R.id.nav_reports -> {
                     startActivity(Intent(this, ReportingActivity::class.java))
-                    true
+                    false
                 }
                 R.id.nav_settings -> {
+                    supportActionBar?.title = "Settings"
                     supportFragmentManager.beginTransaction()
                         .replace(R.id.fragment_container, SettingsFragment())
-                        .addToBackStack(null)
                         .commit()
                     true
                 }
@@ -71,27 +70,15 @@ class MainActivity : AppCompatActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
+            R.id.action_notifications -> {
+                // TODO: open NotificationsActivity when created
+                true
+            }
             R.id.action_profile -> {
-                showLogoutDialog()
+                startActivity(Intent(this, ProfileActivity::class.java))
                 true
             }
             else -> super.onOptionsItemSelected(item)
         }
-    }
-
-    private fun showLogoutDialog() {
-        AlertDialog.Builder(this)
-            .setTitle("Logout")
-            .setMessage("Are you sure you want to logout?")
-            .setPositiveButton("Logout") { _, _ ->
-                com.google.firebase.auth.FirebaseAuth.getInstance().signOut()
-                
-                val intent = Intent(this, LoginActivity::class.java)
-                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                startActivity(intent)
-                finish()
-            }
-            .setNegativeButton("Cancel", null)
-            .show()
     }
 }
