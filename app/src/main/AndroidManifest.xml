@@ -36,6 +36,7 @@
         <activity android:name=".activities.DeviceControlActivity" />
         <activity android:name=".activities.SignupActivity" />
         <activity android:name=".activities.ProfileActivity" />
+        <activity android:name=".activities.NotificationsActivity" />
 
         <service
             android:name=".services.NotificationService"
