@@ -60,9 +60,11 @@ class DashboardFragment : Fragment() {
 
         deviceGrid.layoutManager = GridLayoutManager(requireContext(), 2)
 
-        deviceAdapter = DeviceAdapter(mutableListOf()) { device ->
+        deviceAdapter = DeviceAdapter(mutableListOf(), { device ->
             toggleDevice(device)
-        }
+        }, { device ->
+            openDeviceDetails(device)
+        })
         deviceGrid.adapter = deviceAdapter
     }
 
@@ -136,6 +138,14 @@ class DashboardFragment : Fragment() {
     private fun toggleDevice(device: Device) {
         AppLogger.d(TAG, "Toggling device: ${device.name}")
         viewModel.toggleDevice(device)
+    }
+
+    private fun openDeviceDetails(device: Device) {
+        // Open DeviceControlActivity with deviceId
+        val ctx = requireContext()
+        val intent = android.content.Intent(ctx, com.example.smart_home.activities.DeviceControlActivity::class.java)
+        intent.putExtra("deviceId", device.deviceId)
+        startActivity(intent)
     }
 
     private fun updateStats(devices: List<Device>) {

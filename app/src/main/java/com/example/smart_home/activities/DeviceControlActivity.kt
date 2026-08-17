@@ -8,8 +8,9 @@ import androidx.appcompat.widget.Toolbar
 import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.smart_home.R
+import androidx.activity.viewModels
 import com.example.smart_home.models.Device
-import com.example.smart_home.models.Light
+import com.example.smart_home.viewmodels.DeviceControlViewModel
 
 class DeviceControlActivity : AppCompatActivity() {
 
@@ -33,7 +34,8 @@ class DeviceControlActivity : AppCompatActivity() {
     private lateinit var cardMultiSwitch: CardView
     private lateinit var cardUsageStats: CardView
 
-    private lateinit var currentDevice: Device
+    private val viewModel: DeviceControlViewModel by viewModels()
+    private var currentDevice: Device? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -64,25 +66,39 @@ class DeviceControlActivity : AppCompatActivity() {
         supportActionBar?.title = "Device Control"
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
-        // Load sample device
-        loadSampleDevice()
+        // Load device from intent (if provided) or fall back to sample
+        val deviceId = intent.getStringExtra("deviceId")
+        if (!deviceId.isNullOrEmpty()) {
+            viewModel.loadDevice(deviceId)
+            viewModel.currentDevice.observe(this) { device ->
+                device?.let {
+                    currentDevice = it
+                    updateUI()
+                }
+            }
+        } else {
+            loadSampleDevice()
+        }
+
         setupListeners()
     }
 
     private fun loadSampleDevice() {
-        currentDevice = Light("light1", "Living Room Light", "ON", "floor1", 1, 0)
+        currentDevice = com.example.smart_home.models.Light("light1", "Living Room Light", "ON", "floor1", 1, 0)
         updateUI()
     }
 
     private fun setupListeners() {
         btnTurnOn.setOnClickListener {
-            currentDevice.status = "ON"
-            updateUI()
+            currentDevice?.let {
+                viewModel.turnDeviceOn()
+            }
         }
 
         btnTurnOff.setOnClickListener {
-            currentDevice.status = "OFF"
-            updateUI()
+            currentDevice?.let {
+                viewModel.turnDeviceOff()
+            }
         }
 
         brightnessSlider.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
@@ -105,12 +121,13 @@ class DeviceControlActivity : AppCompatActivity() {
     }
 
     private fun updateUI() {
-        deviceName.text = currentDevice.name
-        deviceType.text = currentDevice.type
-        currentStatus.text = "Status: ${currentDevice.status}"
+        val device = currentDevice
+        deviceName.text = device?.name ?: ""
+        deviceType.text = device?.type ?: ""
+        currentStatus.text = "Status: ${device?.status ?: "UNKNOWN"}"
 
         // Show/hide device-specific controls
-        when (currentDevice.type) {
+        when (device?.type) {
             "LIGHT" -> {
                 cardBrightness.visibility = View.VISIBLE
                 cardScheduling.visibility = View.VISIBLE

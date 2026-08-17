@@ -84,7 +84,7 @@ class MainActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.action_notifications -> {
-                // TODO: open NotificationsActivity when created
+                startActivity(Intent(this, NotificationsActivity::class.java))
                 true
             }
             R.id.action_profile -> {

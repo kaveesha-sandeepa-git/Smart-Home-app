@@ -13,7 +13,8 @@ import com.example.smart_home.models.Device
 
 class DeviceAdapter(
     private var devices: List<Device>,
-    private val listener: (Device) -> Unit
+    private val toggleListener: (Device) -> Unit,
+    private val detailsListener: (Device) -> Unit
 ) : RecyclerView.Adapter<DeviceAdapter.DeviceViewHolder>() {
 
     fun updateDevices(newDevices: List<Device>) {
@@ -28,7 +29,7 @@ class DeviceAdapter(
 
     override fun onBindViewHolder(holder: DeviceViewHolder, position: Int) {
         val device = devices[position]
-        holder.bind(device, listener)
+        holder.bind(device, toggleListener, detailsListener)
     }
 
     override fun getItemCount(): Int = devices.size
@@ -41,7 +42,7 @@ class DeviceAdapter(
         private val status: TextView = view.findViewById(R.id.device_status)
         private val toggleSwitch: androidx.appcompat.widget.SwitchCompat = view.findViewById(R.id.btn_toggle)
 
-        fun bind(device: Device, listener: (Device) -> Unit) {
+        fun bind(device: Device, toggleListener: (Device) -> Unit, detailsListener: (Device) -> Unit) {
             name.text = device.name
             type.text = device.type
 
@@ -62,13 +63,12 @@ class DeviceAdapter(
                 val newStatus = if (isChecked) "ON" else "OFF"
                 device.status = newStatus
                 setStatusBadge(newStatus)
-                listener(device) // Just pass the device back, or maybe toggle isn't meant to open details
+                toggleListener(device)
             }
 
-            // Handle details button (now the whole card)
-            cardRoot.setOnClickListener {
-                listener(device)
-            }
+            // Clicking icon or card opens details
+            icon.setOnClickListener { detailsListener(device) }
+            cardRoot.setOnClickListener { detailsListener(device) }
         }
 
         private fun setDeviceIcon(type: String) {

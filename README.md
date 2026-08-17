@@ -56,3 +56,19 @@ com.example.smart_home/
 1.  **Firebase Setup:** Connect the project to a Firebase console and add `google-services.json`.
 2.  **Permissions:** Ensure the app has Notification and Internet permissions (handled in Manifest).
 3.  **Sync:** On first launch, the app will automatically trigger a background sync to fetch floor and device data.
+
+## Fixing local JDK / jlink issues when building
+
+If your Gradle build fails with an error about `jlink.exe` missing (example: Gradle transform requires `jlink` for Android JDK image creation), run the included helper to locate a full JDK and update the project `gradle.properties`:
+
+From PowerShell in the repo root:
+```powershell
+.\tools\set-java-home.ps1
+```
+
+The script searches common install locations and `$env:JAVA_HOME` for a JDK that contains `bin\jlink.exe`. If found it can update `gradle.properties` with `org.gradle.java.home` pointing to that JDK. After that run:
+```bash
+./gradlew assembleDebug
+```
+
+If no JDK with `jlink` is present, install a full JDK (Temurin/Adoptium, Azul, Oracle) matching your Android Gradle Plugin requirements (Java 17 or 21 depending on plugin), then re-run the script.
