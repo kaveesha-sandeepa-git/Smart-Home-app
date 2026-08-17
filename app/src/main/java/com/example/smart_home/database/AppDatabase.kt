@@ -12,12 +12,9 @@ import com.example.smart_home.models.*
         Device::class,
         Floor::class,
         DeviceUsageReport::class,
-        Light::class,
-        Iron::class,
-        Outlet::class,
-        SecurityCamera::class
+        DeviceUsageSession::class
     ],
-    version = 1,
+    version = 8,
     exportSchema = false
 )
 @TypeConverters(Converters::class)
@@ -26,8 +23,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun deviceDao(): DeviceDao
     abstract fun floorDao(): FloorDao
     abstract fun usageReportDao(): DeviceUsageReportDao
-    abstract fun lightDao(): LightDao
-    abstract fun ironDao(): IronDao
+    abstract fun usageSessionDao(): DeviceUsageSessionDao
 
     companion object {
         @Volatile
@@ -43,6 +39,8 @@ abstract class AppDatabase : RoomDatabase() {
                 )
                 .fallbackToDestructiveMigration()
                 .build()
+                
+                // Clear tables on version change if needed
                 INSTANCE = instance
                 instance
             }

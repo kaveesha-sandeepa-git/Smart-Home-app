@@ -22,6 +22,12 @@ interface DeviceUsageReportDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertAll(reports: List<DeviceUsageReport>)
 
+    @Transaction
+    fun replaceAll(reports: List<DeviceUsageReport>) {
+        deleteAllReports()
+        insertAll(reports)
+    }
+
     @Query("DELETE FROM usage_reports WHERE generatedAt < :cutoffTime")
     fun deleteOldReports(cutoffTime: Long)
 

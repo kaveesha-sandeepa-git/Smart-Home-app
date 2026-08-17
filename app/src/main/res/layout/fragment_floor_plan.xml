@@ -51,46 +51,48 @@
 
                 </LinearLayout>
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="▾"
-                    android:textColor="@color/primary"
-                    android:textSize="16sp" />
+                <ImageButton
+                    android:id="@+id/btn_edit_floor"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:src="@drawable/ic_settings"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:contentDescription="Edit Floor"
+                    app:tint="@color/primary" />
 
             </LinearLayout>
         </androidx.cardview.widget.CardView>
 
-        <!-- Floor Plan Grid Area -->
-        <FrameLayout
+        <!-- Floor Plan Image Area -->
+        <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
-            android:background="@drawable/input_background">
+            app:cardCornerRadius="8dp"
+            app:cardElevation="4dp"
+            app:cardBackgroundColor="@color/card">
 
             <ImageView
                 android:id="@+id/floor_plan_image"
                 android:layout_width="match_parent"
-                android:layout_height="350dp"
-                android:scaleType="fitCenter" />
+                android:layout_height="wrap_content"
+                android:minHeight="300dp"
+                android:maxHeight="600dp"
+                android:adjustViewBounds="true"
+                android:scaleType="fitCenter"
+                android:src="@drawable/ic_floor"
+                android:alpha="0.8" />
 
-            <GridView
-                android:id="@+id/device_grid_overlay"
-                android:layout_width="match_parent"
-                android:layout_height="350dp"
-                android:numColumns="4"
-                android:stretchMode="columnWidth" />
-
-        </FrameLayout>
+        </androidx.cardview.widget.CardView>
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Tap a marker to open Device Control"
+            android:text="Select a floor or upload a new blueprint image"
             android:textSize="10sp"
             android:textColor="@color/ink_soft"
             android:gravity="center"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="12dp"
             android:layout_marginBottom="16dp" />
 
     </LinearLayout>

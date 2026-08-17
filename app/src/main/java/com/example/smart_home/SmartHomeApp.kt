@@ -8,7 +8,12 @@ class SmartHomeApp : Application() {
 
     override fun onCreate() {
         super.onCreate()
-        AppLogger.init(cacheDir)
-        WorkerManager.schedulePeriodicWork(this)
+        try {
+            AppLogger.init(cacheDir)
+            AppLogger.i("SmartHomeApp", "Application starting...")
+            WorkerManager.schedulePeriodicWork(this)
+        } catch (t: Throwable) {
+            android.util.Log.e("SmartHomeApp", "Error in onCreate", t)
+        }
     }
 }

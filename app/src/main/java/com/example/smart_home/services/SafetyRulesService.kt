@@ -6,7 +6,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.example.smart_home.database.AppDatabase
 import com.example.smart_home.database.DeviceDao
-import com.example.smart_home.models.Iron
+import com.example.smart_home.models.Device
 import kotlinx.coroutines.*
 import java.util.*
 
@@ -46,31 +46,31 @@ class SafetyRulesService(context: Context, private val firebaseService: Firebase
     /**
      * Check if an Iron device has exceeded max ON duration
      */
-    fun monitorIronDevice(iron: Iron?) {
-        if (iron == null) return
+    fun monitorIronDevice(device: Device?) {
+        if (device == null) return
 
-        if ("ON" == iron.status && iron.sessionStartTime > 0) {
-            val sessionDuration = (System.currentTimeMillis() - iron.sessionStartTime) / 1000 / 60 // in minutes
+        if ("ON" == device.status && device.sessionStartTime > 0) {
+            val sessionDuration = (System.currentTimeMillis() - device.sessionStartTime) / 1000 / 60 // in minutes
 
-            iron.currentSessionMinutes = sessionDuration.toInt()
+            device.currentSessionMinutes = sessionDuration.toInt()
 
-            if (sessionDuration >= iron.maxOnDurationMinutes) {
+            if (sessionDuration >= device.maxOnDurationMinutes) {
                 // Safety cutoff triggered
-                iron.status = "OFF"
-                iron.safetyAlertActive = true
+                device.status = "OFF"
+                device.safetyAlertActive = true
 
-                serviceScope.launch { deviceDao.updateDevice(iron) }
-                firebaseService.updateDeviceStatus(iron.deviceId, "OFF")
+                serviceScope.launch { deviceDao.updateDevice(device) }
+                firebaseService.updateDeviceStatus(device.deviceId, "OFF")
 
-                val alertMessage = "⚠️ SAFETY ALERT: ${iron.name} exceeded max ON time of " +
-                        "${iron.maxOnDurationMinutes} minutes. Device turned OFF automatically."
+                val alertMessage = "⚠️ SAFETY ALERT: ${device.name} exceeded max ON time of " +
+                        "${device.maxOnDurationMinutes} minutes. Device turned OFF automatically."
                 safetyAlert.postValue(alertMessage)
 
                 Log.w(TAG, alertMessage)
             } else {
                 // Update session duration
-                iron.safetyAlertActive = false
-                serviceScope.launch { deviceDao.updateDevice(iron) }
+                device.safetyAlertActive = false
+                serviceScope.launch { deviceDao.updateDevice(device) }
             }
         }
     }

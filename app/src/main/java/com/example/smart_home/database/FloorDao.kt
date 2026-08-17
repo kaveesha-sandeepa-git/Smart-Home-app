@@ -19,6 +19,12 @@ interface FloorDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertAll(floors: List<Floor>)
 
+    @Transaction
+    fun replaceAll(floors: List<Floor>) {
+        deleteAllFloors()
+        insertAll(floors)
+    }
+
     @Update
     fun updateFloor(floor: Floor)
 

@@ -7,7 +7,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.example.smart_home.database.AppDatabase
 import com.example.smart_home.database.DeviceDao
-import com.example.smart_home.models.Light
+import com.example.smart_home.models.Device
 import kotlinx.coroutines.*
 import java.util.*
 
@@ -39,31 +39,31 @@ class SchedulingService(context: Context, private val firebaseService: FirebaseS
     /**
      * Set schedule for a light device
      */
-    fun setLightSchedule(light: Light, onTimeHHmm: String, offTimeHHmm: String) {
+    fun setLightSchedule(device: Device, onTimeHHmm: String, offTimeHHmm: String) {
         serviceScope.launch {
-            light.schedulingEnabled = true
-            light.scheduleOnTime = parseTimeToMillis(onTimeHHmm)
-            light.scheduleOffTime = parseTimeToMillis(offTimeHHmm)
+            device.schedulingEnabled = true
+            device.scheduleOnTime = parseTimeToMillis(onTimeHHmm)
+            device.scheduleOffTime = parseTimeToMillis(offTimeHHmm)
 
-            deviceDao.updateDevice(light)
-            firebaseService.updateDevice(light)
+            deviceDao.updateDevice(device)
+            firebaseService.updateDevice(device)
 
-            scheduleEvent.postValue("Schedule set for ${light.name}: ON at $onTimeHHmm, OFF at $offTimeHHmm")
-            Log.d(TAG, "Schedule set for light: ${light.name}")
+            scheduleEvent.postValue("Schedule set for ${device.name}: ON at $onTimeHHmm, OFF at $offTimeHHmm")
+            Log.d(TAG, "Schedule set for light: ${device.name}")
         }
     }
 
     /**
      * Disable scheduling for a device
      */
-    fun disableSchedule(light: Light) {
+    fun disableSchedule(device: Device) {
         serviceScope.launch {
-            light.schedulingEnabled = false
-            deviceDao.updateDevice(light)
-            firebaseService.updateDevice(light)
+            device.schedulingEnabled = false
+            deviceDao.updateDevice(device)
+            firebaseService.updateDevice(device)
 
-            scheduleEvent.postValue("Schedule disabled for ${light.name}")
-            Log.d(TAG, "Schedule disabled for light: ${light.name}")
+            scheduleEvent.postValue("Schedule disabled for ${device.name}")
+            Log.d(TAG, "Schedule disabled for light: ${device.name}")
         }
     }
 
@@ -71,12 +71,30 @@ class SchedulingService(context: Context, private val firebaseService: FirebaseS
      * Check if any scheduled devices need to be turned ON/OFF
      */
     private fun checkScheduledDevices() {
-        val now = Calendar.getInstance()
+        val currentTimeMs = getCurrentTimeMs()
         
         serviceScope.launch {
-            // In production, query all lights with scheduling enabled
-            // For now, this is a placeholder
-            Log.d(TAG, "Checking scheduled devices at ${now.time}")
+            val scheduledDevices = deviceDao.getScheduledDevicesSync()
+            for (device in scheduledDevices) {
+                val onTime = device.scheduleOnTime
+                val offTime = device.scheduleOffTime
+                
+                val shouldBeOn = if (onTime < offTime) {
+                    // Normal range (e.g., 08:00 to 17:00)
+                    currentTimeMs in onTime until offTime
+                } else {
+                    // Range wraps midnight (e.g., 22:00 to 06:00)
+                    currentTimeMs >= onTime || currentTimeMs < offTime
+                }
+                
+                if (shouldBeOn && device.status != "ON") {
+                    executeScheduledAction(device.deviceId, "ON")
+                } else if (!shouldBeOn && device.status == "ON") {
+                    // Only turn OFF if it's currently ON and was supposed to be ON by schedule?
+                    // Actually, if schedule is enabled, it should strictly follow the state.
+                    executeScheduledAction(device.deviceId, "OFF")
+                }
+            }
         }
     }
 

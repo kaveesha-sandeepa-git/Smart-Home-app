@@ -4,10 +4,15 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.switchMap
+import androidx.lifecycle.viewModelScope
 import com.example.smart_home.models.DeviceUsageReport
+import com.example.smart_home.models.Floor
 import com.example.smart_home.repository.SmartHomeRepository
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import java.util.*
+import kotlin.time.Duration.Companion.seconds
 
 /**
  * ViewModel for Reporting screen
@@ -16,85 +21,106 @@ import java.util.*
 class ReportingViewModel(application: Application) : AndroidViewModel(application) {
 
     private val repository: SmartHomeRepository = SmartHomeRepository.getInstance(application)
-    val allReports: LiveData<List<DeviceUsageReport>> = repository.getAllReports()
     
-    private val filterTrigger = MutableLiveData<FilterParams>()
+    private val _usageData = MutableLiveData<List<DeviceUsageReport>>()
+    val usageData: LiveData<List<DeviceUsageReport>> = _usageData
     
-    val filteredReports: LiveData<List<DeviceUsageReport>> = filterTrigger.switchMap { params ->
-        if (params.period == "all") {
-            allReports
-        } else {
-            repository.getReportsByDateRange(params.startTime, params.endTime)
+    val floors: LiveData<List<Floor>> = repository.getAllFloors()
+    
+    private var currentPeriod = "today"
+    private var selectedFloorId: String? = null // null means "All Floors"
+    
+    private var refreshJob: Job? = null
+
+    init {
+        startPeriodicRefresh()
+    }
+
+    private fun startPeriodicRefresh() {
+        refreshJob?.cancel()
+        refreshJob = viewModelScope.launch {
+            while (true) {
+                calculateUsageForPeriod(currentPeriod, selectedFloorId)
+                delay(5.seconds) // Refresh every 5 seconds
+            }
         }
     }
 
-    init {
-        filterByToday()
-    }
-
-    data class FilterParams(val period: String, val startTime: Long = 0, val endTime: Long = Long.MAX_VALUE)
-
-    // ============= GETTERS =============
-
-    fun getReportsByDevice(deviceId: String): LiveData<List<DeviceUsageReport>> =
-        repository.getReportsByDevice(deviceId)
-
-    fun getRepositoryError(): LiveData<String> = repository.getRepositoryError()
-
-    // ============= FILTERING =============
-
     fun filterByToday() {
-        val cal = Calendar.getInstance()
-        cal.set(Calendar.HOUR_OF_DAY, 0)
-        cal.set(Calendar.MINUTE, 0)
-        cal.set(Calendar.SECOND, 0)
-        cal.set(Calendar.MILLISECOND, 0)
-        val startOfDay = cal.timeInMillis
-
-        cal.set(Calendar.HOUR_OF_DAY, 23)
-        cal.set(Calendar.MINUTE, 59)
-        cal.set(Calendar.SECOND, 59)
-        cal.set(Calendar.MILLISECOND, 999)
-        val endOfDay = cal.timeInMillis
-
-        filterTrigger.value = FilterParams("today", startOfDay, endOfDay)
+        currentPeriod = "today"
+        calculateUsageForPeriod(currentPeriod, selectedFloorId)
     }
 
     fun filterByWeek() {
-        val cal = Calendar.getInstance()
-        cal.add(Calendar.DAY_OF_YEAR, -7)
-        val startOfWeek = cal.timeInMillis
-        val endOfWeek = System.currentTimeMillis()
-
-        filterTrigger.value = FilterParams("week", startOfWeek, endOfWeek)
+        currentPeriod = "week"
+        calculateUsageForPeriod(currentPeriod, selectedFloorId)
     }
 
     fun filterByMonth() {
-        val cal = Calendar.getInstance()
-        cal.add(Calendar.MONTH, -1)
-        val startOfMonth = cal.timeInMillis
-        val endOfMonth = System.currentTimeMillis()
-
-        filterTrigger.value = FilterParams("month", startOfMonth, endOfMonth)
+        currentPeriod = "month"
+        calculateUsageForPeriod(currentPeriod, selectedFloorId)
     }
 
-    fun filterByAll() {
-        filterTrigger.value = FilterParams("all")
+    fun selectFloor(floorId: String?) {
+        selectedFloorId = if (floorId == "all") null else floorId
+        calculateUsageForPeriod(currentPeriod, selectedFloorId)
     }
 
-    // ============= REPORTING =============
-
-    fun generateReport(deviceId: String) {
-        // This is a bit inefficient as it observes forever or needs a owner. 
-        // In a real app, we'd have a getDeviceByIdSync or similar.
-        // For now, I'll follow the pattern of triggering it via repository if possible.
-        repository.getAllDevices().observeForever(object : androidx.lifecycle.Observer<List<com.example.smart_home.models.Device>> {
-            override fun onChanged(devices: List<com.example.smart_home.models.Device>) {
-                devices.find { it.deviceId == deviceId }?.let {
-                    repository.generateDeviceReport(it)
+    private fun calculateUsageForPeriod(period: String, floorId: String?) {
+        viewModelScope.launch {
+            val now = Calendar.getInstance()
+            val end = now.timeInMillis
+            val start = when (period) {
+                "today" -> {
+                    val cal = now.clone() as Calendar
+                    cal.set(Calendar.HOUR_OF_DAY, 0); cal.set(Calendar.MINUTE, 0); cal.set(Calendar.SECOND, 0); cal.set(Calendar.MILLISECOND, 0)
+                    cal.timeInMillis
                 }
-                repository.getAllDevices().removeObserver(this)
+                "week" -> {
+                    val cal = now.clone() as Calendar
+                    cal.add(Calendar.DAY_OF_YEAR, -7)
+                    cal.timeInMillis
+                }
+                "month" -> {
+                    val cal = now.clone() as Calendar
+                    cal.add(Calendar.MONTH, -1)
+                    cal.timeInMillis
+                }
+                else -> 0L
             }
-        })
+
+            val usageMap = repository.getAllDeviceUsage(start, end)
+            var allDevices = repository.getAllDevicesSync()
+            
+            // Filter by floor if needed
+            if (floorId != null) {
+                allDevices = allDevices.filter { it.floorId == floorId }
+            }
+            
+            val reports = allDevices.map { device ->
+                val duration = usageMap[device.deviceId] ?: 0L
+                val floor = floors.value?.find { it.floorId == device.floorId }
+                DeviceUsageReport(
+                    reportId = "${period}_${device.deviceId}",
+                    deviceId = device.deviceId,
+                    deviceName = device.name,
+                    roomName = device.roomName,
+                    floorName = floor?.name ?: "Unknown",
+                    totalOnTimeMs = duration,
+                    energyConsumedKwh = repository.calculateEnergy(device, duration),
+                    status = device.status,
+                    generatedAt = System.currentTimeMillis()
+                )
+            }.sortedByDescending { it.totalOnTimeMs }
+            
+            _usageData.postValue(reports)
+        }
     }
+
+    override fun onCleared() {
+        super.onCleared()
+        refreshJob?.cancel()
+    }
+
+    fun getRepositoryError(): LiveData<String> = repository.getRepositoryError()
 }

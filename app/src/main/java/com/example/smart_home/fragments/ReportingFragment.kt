@@ -4,30 +4,34 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
 import android.widget.Button
+import android.widget.Spinner
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.smart_home.repository.SmartHomeRepository
-import java.util.*
-import kotlin.concurrent.schedule
 import androidx.recyclerview.widget.RecyclerView
 import com.example.smart_home.R
 import com.example.smart_home.adapters.UsageReportAdapter
 import com.example.smart_home.models.DeviceUsageReport
+import com.example.smart_home.models.Floor
+import com.example.smart_home.viewmodels.ReportingViewModel
 
 /**
  * Reporting Fragment - Shows device usage reports with floor/period filters
  */
 class ReportingFragment : Fragment() {
 
+    private val viewModel: ReportingViewModel by viewModels()
     private lateinit var reportsList: RecyclerView
     private lateinit var reportAdapter: UsageReportAdapter
+    private lateinit var floorSpinner: Spinner
     private lateinit var btnToday: Button
     private lateinit var btnWeek: Button
     private lateinit var btnMonth: Button
     private val reports: MutableList<DeviceUsageReport> = mutableListOf()
-    private lateinit var repository: SmartHomeRepository
-    private var currentObserver: androidx.lifecycle.LiveData<List<DeviceUsageReport>>? = null
+    private var floors: List<Floor> = emptyList()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -40,6 +44,7 @@ class ReportingFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         reportsList = view.findViewById(R.id.reports_list)
+        floorSpinner = view.findViewById(R.id.floor_spinner)
         btnToday = view.findViewById(R.id.btn_today)
         btnWeek = view.findViewById(R.id.btn_week)
         btnMonth = view.findViewById(R.id.btn_month)
@@ -48,47 +53,43 @@ class ReportingFragment : Fragment() {
         reportsList.layoutManager = LinearLayoutManager(requireContext())
         reportsList.adapter = reportAdapter
 
-        repository = SmartHomeRepository.getInstance(requireContext())
-
-        // Load all reports initially
-        currentObserver = repository.getAllReports()
-        currentObserver?.observe(viewLifecycleOwner) { list ->
-            reports.clear()
-            reports.addAll(list)
-            reportAdapter.notifyDataSetChanged()
-        }
-
-        btnToday.setOnClickListener { filterReports("today") }
-        btnWeek.setOnClickListener { filterReports("week") }
-        btnMonth.setOnClickListener { filterReports("month") }
+        setupObservers()
+        setupListeners()
     }
 
-    private fun filterReports(period: String) {
-        // compute start and end times
-        val now = Calendar.getInstance()
-        val end = now.timeInMillis
-        val start = when (period) {
-            "today" -> {
-                now.set(Calendar.HOUR_OF_DAY, 0); now.set(Calendar.MINUTE, 0); now.set(Calendar.SECOND, 0); now.set(Calendar.MILLISECOND, 0)
-                now.timeInMillis
-            }
-            "week" -> {
-                now.set(Calendar.DAY_OF_WEEK, now.firstDayOfWeek); now.set(Calendar.HOUR_OF_DAY, 0); now.set(Calendar.MINUTE, 0); now.set(Calendar.SECOND, 0); now.set(Calendar.MILLISECOND, 0)
-                now.timeInMillis
-            }
-            "month" -> {
-                now.set(Calendar.DAY_OF_MONTH, 1); now.set(Calendar.HOUR_OF_DAY, 0); now.set(Calendar.MINUTE, 0); now.set(Calendar.SECOND, 0); now.set(Calendar.MILLISECOND, 0)
-                now.timeInMillis
-            }
-            else -> 0L
-        }
-
-        currentObserver?.removeObservers(viewLifecycleOwner)
-        currentObserver = repository.getReportsByDateRange(start, end)
-        currentObserver?.observe(viewLifecycleOwner) { list ->
+    private fun setupObservers() {
+        viewModel.usageData.observe(viewLifecycleOwner) { list ->
             reports.clear()
             reports.addAll(list)
             reportAdapter.notifyDataSetChanged()
+        }
+
+        viewModel.floors.observe(viewLifecycleOwner) { floorList ->
+            floors = floorList
+            val names = mutableListOf("All Floors")
+            names.addAll(floorList.map { it.name })
+            
+            val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, names)
+            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+            floorSpinner.adapter = adapter
+        }
+    }
+
+    private fun setupListeners() {
+        btnToday.setOnClickListener { viewModel.filterByToday() }
+        btnWeek.setOnClickListener { viewModel.filterByWeek() }
+        btnMonth.setOnClickListener { viewModel.filterByMonth() }
+
+        floorSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                if (position == 0) {
+                    viewModel.selectFloor("all")
+                } else if (position - 1 in floors.indices) {
+                    viewModel.selectFloor(floors[position - 1].floorId)
+                }
+            }
+
+            override fun onNothingSelected(parent: AdapterView<*>?) {}
         }
     }
 

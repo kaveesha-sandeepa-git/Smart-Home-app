@@ -8,6 +8,8 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.smart_home.R
+import com.example.smart_home.repository.SmartHomeRepository
+import com.example.smart_home.utils.PreferencesManager
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.auth.FirebaseAuth
@@ -16,13 +18,21 @@ class LoginActivity : AppCompatActivity() {
 
     private lateinit var auth: FirebaseAuth
     private lateinit var progressBar: ProgressBar
+    private lateinit var preferencesManager: PreferencesManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         auth = FirebaseAuth.getInstance()
+        preferencesManager = PreferencesManager.getInstance(this)
 
         if (auth.currentUser != null) {
+            val oldUserId = preferencesManager.userId
+            val newUserId = auth.currentUser?.uid ?: ""
+            if (oldUserId != newUserId) {
+                preferencesManager.userId = newUserId
+                SmartHomeRepository.getInstance(this).clearData()
+            }
             navigateToMain()
             return
         }
@@ -36,6 +46,7 @@ class LoginActivity : AppCompatActivity() {
         progressBar = findViewById(R.id.progress_bar)
 
         loginButton.setOnClickListener {
+// ...
             val email = emailEditText.text.toString().trim()
             val password = passwordEditText.text.toString().trim()
 
@@ -45,6 +56,11 @@ class LoginActivity : AppCompatActivity() {
                     .addOnCompleteListener(this) { task ->
                         showLoading(false)
                         if (task.isSuccessful) {
+                            val newUserId = auth.currentUser?.uid ?: ""
+                            if (preferencesManager.userId != newUserId) {
+                                preferencesManager.userId = newUserId
+                                SmartHomeRepository.getInstance(this).clearData()
+                            }
                             navigateToMain()
                         } else {
                             Toast.makeText(

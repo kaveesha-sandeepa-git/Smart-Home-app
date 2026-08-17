@@ -8,6 +8,8 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.smart_home.R
+import com.example.smart_home.repository.SmartHomeRepository
+import com.example.smart_home.utils.PreferencesManager
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.auth.FirebaseAuth
@@ -17,12 +19,14 @@ class SignupActivity : AppCompatActivity() {
 
     private lateinit var auth: FirebaseAuth
     private lateinit var progressBar: ProgressBar
+    private lateinit var preferencesManager: PreferencesManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_signup)
 
         auth = FirebaseAuth.getInstance()
+        preferencesManager = PreferencesManager.getInstance(this)
 
         val usernameEditText = findViewById<TextInputEditText>(R.id.et_username)
         val emailEditText = findViewById<TextInputEditText>(R.id.et_email)
@@ -49,6 +53,11 @@ class SignupActivity : AppCompatActivity() {
             auth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this) { task ->
                     if (task.isSuccessful) {
+                        val newUserId = auth.currentUser?.uid ?: ""
+                        if (preferencesManager.userId != newUserId) {
+                            preferencesManager.userId = newUserId
+                            SmartHomeRepository.getInstance(this).clearData()
+                        }
                         // Save display name
                         val profileUpdate = UserProfileChangeRequest.Builder()
                             .setDisplayName(username)

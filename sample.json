@@ -57,6 +57,30 @@
         "lastUpdated": 1690000000000,
         "totalOnTime": 0,
         "sessionStartTime": 0
+      },
+      "light2": {
+        "deviceId": "light2",
+        "name": "Hallway Light",
+        "type": "LIGHT",
+        "status": "OFF",
+        "floorId": "",
+        "gridX": 0,
+        "gridY": 0,
+        "lastUpdated": 1690000000000,
+        "totalOnTime": 0,
+        "sessionStartTime": 0
+      },
+      "camera1": {
+        "deviceId": "camera1",
+        "name": "Front Door Camera",
+        "type": "CAMERA",
+        "status": "ON",
+        "floorId": "",
+        "gridX": 0,
+        "gridY": 0,
+        "lastUpdated": 1690000000000,
+        "totalOnTime": 0,
+        "sessionStartTime": 0
       }
     }
   }

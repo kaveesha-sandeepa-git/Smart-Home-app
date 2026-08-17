@@ -1,10 +1,8 @@
 package com.example.smart_home.adapters
 
-import android.content.res.ColorStateList
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
@@ -17,8 +15,13 @@ class DeviceAdapter(
     private val detailsListener: (Device) -> Unit
 ) : RecyclerView.Adapter<DeviceAdapter.DeviceViewHolder>() {
 
-    fun updateDevices(newDevices: List<Device>) {
+    private var floorMap: Map<String, String> = emptyMap()
+    private var showFloorNote: Boolean = false
+
+    fun updateDevices(newDevices: List<Device>, floorMap: Map<String, String>, showFloorNote: Boolean) {
         this.devices = newDevices
+        this.floorMap = floorMap
+        this.showFloorNote = showFloorNote
         notifyDataSetChanged()
     }
 
@@ -29,7 +32,8 @@ class DeviceAdapter(
 
     override fun onBindViewHolder(holder: DeviceViewHolder, position: Int) {
         val device = devices[position]
-        holder.bind(device, toggleListener, detailsListener)
+        val floorName = floorMap[device.floorId] ?: "Unknown Floor"
+        holder.bind(device, floorName, showFloorNote, toggleListener, detailsListener)
     }
 
     override fun getItemCount(): Int = devices.size
@@ -39,31 +43,50 @@ class DeviceAdapter(
         private val icon: ImageView = view.findViewById(R.id.device_icon)
         private val name: TextView = view.findViewById(R.id.device_name)
         private val type: TextView = view.findViewById(R.id.device_type)
+        private val roomName: TextView = view.findViewById(R.id.device_room)
+        private val floorNote: TextView = view.findViewById(R.id.device_floor_note)
         private val status: TextView = view.findViewById(R.id.device_status)
+        private val schedule: TextView = view.findViewById(R.id.device_schedule)
         private val toggleSwitch: androidx.appcompat.widget.SwitchCompat = view.findViewById(R.id.btn_toggle)
 
-        fun bind(device: Device, toggleListener: (Device) -> Unit, detailsListener: (Device) -> Unit) {
+        fun bind(
+            device: Device, 
+            floorNameStr: String, 
+            showFloor: Boolean,
+            toggleListener: (Device) -> Unit, 
+            detailsListener: (Device) -> Unit
+        ) {
             name.text = device.name
             type.text = device.type
+            roomName.text = if (device.roomName.isNotBlank()) "• ${device.roomName}" else ""
 
-            // Set icon based on device type
+            if (showFloor) {
+                floorNote.text = "• $floorNameStr"
+                floorNote.visibility = View.VISIBLE
+            } else {
+                floorNote.visibility = View.GONE
+            }
+
             setDeviceIcon(device.type)
-
-            // Set status pill text and background
             setStatusBadge(device.status)
+            
+            if (device.schedulingEnabled) {
+                val onTime = formatMillisToTime(device.scheduleOnTime)
+                val offTime = formatMillisToTime(device.scheduleOffTime)
+                schedule.text = "🕒 Schedule: ON ($onTime - $offTime)"
+                schedule.visibility = View.VISIBLE
+            } else {
+                schedule.visibility = View.GONE
+            }
 
-            // Set toggle switch state
-            // temporarily remove listener to prevent it from firing during bind
             toggleSwitch.setOnCheckedChangeListener(null)
             toggleSwitch.isChecked = device.status == "ON"
             toggleSwitch.isEnabled = device.status != "DISCONNECTED" && device.status != "ERROR"
 
-            // Handle toggle switch
-            toggleSwitch.setOnCheckedChangeListener { _, isChecked ->
+            toggleSwitch.setOnCheckedChangeListener { _, _ ->
                 toggleListener(device)
             }
 
-            // Clicking icon or card opens details
             icon.setOnClickListener { detailsListener(device) }
             cardRoot.setOnClickListener { detailsListener(device) }
         }
@@ -79,7 +102,6 @@ class DeviceAdapter(
             }
             icon.setImageResource(iconRes)
             
-            // Set the background color based on the type, matching the HTML prototype
             val bgRes = when (type) {
                 "LIGHT" -> R.drawable.icon_badge_light_bg
                 "OUTLET" -> R.drawable.icon_badge_outlet_bg
@@ -93,16 +115,21 @@ class DeviceAdapter(
 
         private fun setStatusBadge(statusText: String) {
             status.text = statusText
-            
             val (colorRes, bgRes) = when (statusText) {
                 "ON" -> Pair(R.color.status_on, R.drawable.status_chip_on_bg)
                 "OFF" -> Pair(R.color.status_off, R.drawable.status_chip_off_bg)
                 "ERROR" -> Pair(R.color.status_error, R.drawable.status_chip_error_bg)
-                else -> Pair(R.color.status_disconnected, R.drawable.status_chip_disc_bg) // DISCONNECTED
+                else -> Pair(R.color.status_disconnected, R.drawable.status_chip_disc_bg)
             }
-            
             status.setTextColor(itemView.context.getColor(colorRes))
             status.setBackgroundResource(bgRes)
+        }
+
+        private fun formatMillisToTime(millis: Long): String {
+            val totalMinutes = (millis / 1000 / 60).toInt()
+            val hours = totalMinutes / 60
+            val minutes = totalMinutes % 60
+            return String.format(java.util.Locale.US, "%02d:%02d", hours, minutes)
         }
     }
 }

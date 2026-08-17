@@ -9,6 +9,7 @@ import android.widget.ArrayAdapter
 import android.widget.Spinner
 import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.GridLayoutManager
@@ -31,6 +32,7 @@ class DashboardFragment : Fragment() {
     private lateinit var floorSpinner: Spinner
     private lateinit var devicesOnCount: TextView
     private lateinit var totalDevicesCount: TextView
+    private lateinit var fabAddDevice: com.google.android.material.floatingactionbutton.FloatingActionButton
 
     private lateinit var deviceAdapter: DeviceAdapter
     private var floors: List<Floor> = emptyList()
@@ -66,31 +68,39 @@ class DashboardFragment : Fragment() {
             openDeviceDetails(device)
         })
         deviceGrid.adapter = deviceAdapter
+        
+        fabAddDevice = view.findViewById(R.id.fab_add_device)
+        fabAddDevice.setOnClickListener {
+            showAddDeviceDialog()
+        }
     }
 
     private fun setupObservers() {
         // Observe floors to populate spinner
         viewModel.floors.observe(viewLifecycleOwner) { floorList ->
             floors = floorList
-            val floorNames = floors.map { it.name }
-            val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, floorNames)
+            val names = mutableListOf("All Floors")
+            names.addAll(floors.map { it.name })
+            
+            val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, names)
             adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
             floorSpinner.adapter = adapter
             
-            if (floors.isNotEmpty()) {
-                viewModel.selectFloor(floors[0].floorId)
+            if (floorList.isNotEmpty() && viewModel.isAllFloorsSelected().not() && floorSpinner.selectedItemPosition == -1) {
+                floorSpinner.setSelection(1) // Default to first floor if exists
             }
             AppLogger.d(TAG, "Floors loaded: ${floors.size}")
         }
 
         // Observe devices for current floor
         viewModel.currentFloorDevices.observe(viewLifecycleOwner) { deviceList ->
-            deviceAdapter.updateDevices(deviceList)
+            val floorMap = floors.associate { it.floorId to it.name }
+            deviceAdapter.updateDevices(deviceList, floorMap, viewModel.isAllFloorsSelected())
             updateStats(deviceList)
-            AppLogger.d(TAG, "Devices loaded for floor: ${deviceList.size}")
+            AppLogger.d(TAG, "Devices loaded: ${deviceList.size}")
         }
 
-        // Observe all devices to get total count if needed, but currentFloorDevices updateStats might be enough for current view
+        // Observe total count
         viewModel.allDevices.observe(viewLifecycleOwner) { allDevices ->
             totalDevicesCount.text = allDevices.size.toString()
         }
@@ -124,8 +134,10 @@ class DashboardFragment : Fragment() {
     private fun setupListeners() {
         floorSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-                if (position in floors.indices) {
-                    val selectedFloor = floors[position]
+                if (position == 0) {
+                    viewModel.selectFloor("all")
+                } else if (position - 1 in floors.indices) {
+                    val selectedFloor = floors[position - 1]
                     viewModel.selectFloor(selectedFloor.floorId)
                     AppLogger.d(TAG, "Floor selected: ${selectedFloor.name}")
                 }
@@ -135,13 +147,63 @@ class DashboardFragment : Fragment() {
         }
     }
 
+    private fun showAddDeviceDialog() {
+        if (floors.isEmpty()) {
+            Toast.makeText(requireContext(), "Please add a floor first", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        val dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_create_device, null)
+        val nameInput = dialogView.findViewById<android.widget.EditText>(R.id.et_device_name)
+        val roomInput = dialogView.findViewById<android.widget.AutoCompleteTextView>(R.id.et_room_name)
+        val typeSpinner = dialogView.findViewById<Spinner>(R.id.spinner_device_type)
+
+        // Setup AutoComplete for room names
+        val existingRooms = viewModel.getUniqueRoomNames()
+        val roomAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, existingRooms)
+        roomInput.setAdapter(roomAdapter)
+        roomInput.threshold = 1 // Show suggestions after 1 character
+
+        val types = arrayOf("LIGHT", "OUTLET", "MULTI_SWITCH", "CAMERA", "IRON")
+        val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, types)
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        typeSpinner.adapter = adapter
+
+        AlertDialog.Builder(requireContext())
+            .setTitle("Add New Device")
+            .setView(dialogView)
+            .setPositiveButton("Create") { _, _ ->
+                val name = nameInput.text.toString()
+                val room = roomInput.text.toString()
+                val type = typeSpinner.selectedItem.toString()
+
+                if (name.isNotEmpty()) {
+                    val selectedPos = floorSpinner.selectedItemPosition
+                    val floorId = if (selectedPos <= 0) {
+                        if (floors.isNotEmpty()) floors[0].floorId else ""
+                    } else {
+                        floors[selectedPos - 1].floorId
+                    }
+                    
+                    if (floorId.isNotEmpty()) {
+                        viewModel.createNewDevice(name, room, type, floorId)
+                    } else {
+                        Toast.makeText(requireContext(), "Error determining floor", Toast.LENGTH_SHORT).show()
+                    }
+                } else {
+                    Toast.makeText(requireContext(), "Name cannot be empty", Toast.LENGTH_SHORT).show()
+                }
+            }
+            .setNegativeButton("Cancel", null)
+            .show()
+    }
+
     private fun toggleDevice(device: Device) {
         AppLogger.d(TAG, "Toggling device: ${device.name}")
         viewModel.toggleDevice(device)
     }
 
     private fun openDeviceDetails(device: Device) {
-        // Open DeviceControlActivity with deviceId
         val ctx = requireContext()
         val intent = android.content.Intent(ctx, com.example.smart_home.activities.DeviceControlActivity::class.java)
         intent.putExtra("deviceId", device.deviceId)

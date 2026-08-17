@@ -47,6 +47,25 @@
                     android:textStyle="bold"
                     android:textColor="@color/ink" />
 
+                <TextView
+                    android:id="@+id/room_name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="4dp"
+                    android:text="• Room"
+                    android:textSize="11sp"
+                    android:textColor="@color/ink_soft" />
+
+                <TextView
+                    android:id="@+id/floor_name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="4dp"
+                    android:text="• Floor 1"
+                    android:textSize="11sp"
+                    android:textColor="@color/ink_soft"
+                    android:textStyle="italic" />
+
             </LinearLayout>
 
             <!-- Right block: Status chip -->
