@@ -4,8 +4,10 @@ import android.os.Bundle
 import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.SwitchCompat
 import androidx.appcompat.widget.Toolbar
 import androidx.cardview.widget.CardView
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.example.smart_home.R
 import androidx.activity.viewModels
@@ -19,8 +21,7 @@ class DeviceControlActivity : AppCompatActivity() {
     private lateinit var deviceName: TextView
     private lateinit var deviceType: TextView
     private lateinit var currentStatus: TextView
-    private lateinit var btnTurnOn: Button
-    private lateinit var btnTurnOff: Button
+    private lateinit var powerToggle: SwitchCompat
     private lateinit var btnSetDuration: Button
     private lateinit var schedulingToggle: androidx.appcompat.widget.SwitchCompat
     private lateinit var brightnessSlider: SeekBar
@@ -47,8 +48,7 @@ class DeviceControlActivity : AppCompatActivity() {
         deviceName = findViewById(R.id.device_name)
         deviceType = findViewById(R.id.device_type)
         currentStatus = findViewById(R.id.device_status)
-        btnTurnOn = findViewById(R.id.btn_turn_on)
-        btnTurnOff = findViewById(R.id.btn_turn_off)
+        powerToggle = findViewById(R.id.power_toggle)
         brightnessSlider = findViewById(R.id.brightness_slider)
         brightnessValue = findViewById(R.id.brightness_value)
         schedulingToggle = findViewById(R.id.scheduling_toggle)
@@ -89,18 +89,6 @@ class DeviceControlActivity : AppCompatActivity() {
     }
 
     private fun setupListeners() {
-        btnTurnOn.setOnClickListener {
-            currentDevice?.let {
-                viewModel.turnDeviceOn()
-            }
-        }
-
-        btnTurnOff.setOnClickListener {
-            currentDevice?.let {
-                viewModel.turnDeviceOff()
-            }
-        }
-
         brightnessSlider.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
                 brightnessValue.text = "$progress%"
@@ -124,7 +112,30 @@ class DeviceControlActivity : AppCompatActivity() {
         val device = currentDevice
         deviceName.text = device?.name ?: ""
         deviceType.text = device?.type ?: ""
-        currentStatus.text = "Status: ${device?.status ?: "UNKNOWN"}"
+
+        val statusText = device?.status ?: "UNKNOWN"
+        currentStatus.text = statusText
+
+        val (textColor, bgRes) = when (statusText) {
+            "ON" -> Pair(R.color.status_on, R.drawable.status_chip_on_bg)
+            "OFF" -> Pair(R.color.status_off, R.drawable.status_chip_off_bg)
+            "ERROR" -> Pair(R.color.status_error, R.drawable.status_chip_error_bg)
+            else -> Pair(R.color.status_disconnected, R.drawable.status_chip_disc_bg)
+        }
+        currentStatus.setTextColor(ContextCompat.getColor(this, textColor))
+        currentStatus.setBackgroundResource(bgRes)
+
+        powerToggle.setOnCheckedChangeListener(null)
+        powerToggle.isChecked = statusText == "ON"
+        powerToggle.isEnabled = statusText != "DISCONNECTED" && statusText != "ERROR"
+        powerToggle.setOnCheckedChangeListener { _, isChecked ->
+            currentDevice?.let { d ->
+                if (d.status == "DISCONNECTED" || d.status == "ERROR") return@let
+                d.status = if (isChecked) "ON" else "OFF"
+                if (isChecked) viewModel.turnDeviceOn() else viewModel.turnDeviceOff()
+                updateUI()
+            }
+        }
 
         // Show/hide device-specific controls
         when (device?.type) {

@@ -60,9 +60,6 @@ class DeviceAdapter(
 
             // Handle toggle switch
             toggleSwitch.setOnCheckedChangeListener { _, isChecked ->
-                val newStatus = if (isChecked) "ON" else "OFF"
-                device.status = newStatus
-                setStatusBadge(newStatus)
                 toggleListener(device)
             }
 

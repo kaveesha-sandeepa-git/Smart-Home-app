@@ -23,54 +23,11 @@
             android:orientation="vertical"
             android:padding="14dp">
 
-            <!-- Floor Info Card -->
-            <androidx.cardview.widget.CardView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:cardCornerRadius="8dp"
-                app:cardElevation="2dp"
-                app:cardBackgroundColor="@color/card">
-
-                <RelativeLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:padding="12dp">
-
-                    <TextView
-                        android:id="@+id/floor_name"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentStart="true"
-                        android:layout_centerVertical="true"
-                        android:text="Floor Name"
-                        android:textSize="14sp"
-                        android:textStyle="bold"
-                        android:textColor="@color/ink" />
-
-                    <TextView
-                        android:id="@+id/floor_info"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentEnd="true"
-                        android:layout_centerVertical="true"
-                        android:text="4x4 grid"
-                        android:textSize="11sp"
-                        android:textStyle="bold"
-                        android:paddingStart="9dp"
-                        android:paddingEnd="9dp"
-                        android:paddingTop="4dp"
-                        android:paddingBottom="4dp"
-                        android:textColor="@color/ink_soft"
-                        android:background="@drawable/input_background" />
-
-                </RelativeLayout>
-            </androidx.cardview.widget.CardView>
-
             <!-- Floor Selector Card -->
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
+                android:layout_marginTop="2dp"
                 app:cardCornerRadius="8dp"
                 app:cardElevation="2dp"
                 app:cardBackgroundColor="@color/card">

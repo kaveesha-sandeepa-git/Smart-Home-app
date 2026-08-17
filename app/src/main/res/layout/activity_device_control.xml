@@ -93,39 +93,49 @@
 
             </androidx.cardview.widget.CardView>
 
-            <!-- ON/OFF Buttons -->
+            <!-- Power Switch -->
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="14dp"
+                android:layout_marginBottom="14dp"
+                app:cardCornerRadius="8dp"
+                app:cardElevation="2dp"
+                app:cardBackgroundColor="@color/card">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:padding="14dp">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="POWER"
+                        android:textSize="11sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/ink_soft"
+                        android:letterSpacing="0.04" />
+
+                    <androidx.appcompat.widget.SwitchCompat
+                        android:id="@+id/power_toggle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:thumbTint="@color/white"
+                        android:trackTint="@color/switch_track_selector" />
+
+                </LinearLayout>
+
+            </androidx.cardview.widget.CardView>
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:layout_marginTop="14dp"
-                android:layout_marginBottom="14dp">
-
-                <Button
-                    android:id="@+id/btn_turn_on"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_marginEnd="5dp"
-                    android:text="ON"
-                    android:textStyle="bold"
-                    android:textSize="14sp"
-                    android:padding="14dp"
-                    android:textColor="@color/white"
-                    android:backgroundTint="@color/status_on" />
-
-                <Button
-                    android:id="@+id/btn_turn_off"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_marginStart="5dp"
-                    android:text="OFF"
-                    android:textStyle="bold"
-                    android:textSize="14sp"
-                    android:padding="14dp"
-                    android:textColor="@color/ink_soft"
-                    android:backgroundTint="@color/card" />
+                android:visibility="gone">
 
             </LinearLayout>
 

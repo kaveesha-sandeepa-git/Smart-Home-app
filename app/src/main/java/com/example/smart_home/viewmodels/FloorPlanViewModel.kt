@@ -13,6 +13,7 @@ class FloorPlanViewModel(application: Application) : AndroidViewModel(applicatio
 
     private val repository = SmartHomeRepository.getInstance(application)
     private val selectedFloorId = MutableLiveData<String>()
+    val floors: LiveData<List<Floor>> = repository.getAllFloors()
 
     val currentFloor: LiveData<Floor> = selectedFloorId.switchMap { floorId ->
         repository.getFloorById(floorId)

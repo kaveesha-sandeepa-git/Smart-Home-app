@@ -4,8 +4,11 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
 import android.widget.GridView
 import android.widget.ImageView
+import android.widget.Spinner
 import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
@@ -25,10 +28,10 @@ class FloorPlanFragment : Fragment() {
 
     private lateinit var floorPlanImage: ImageView
     private lateinit var deviceGridOverlay: GridView
-    private lateinit var floorName: TextView
-    private lateinit var floorInfo: TextView
+    private lateinit var floorSpinner: Spinner
 
     private var devices: MutableList<Device> = mutableListOf()
+    private var floors: List<Floor> = emptyList()
     private var currentFloor: Floor? = null
 
     override fun onCreateView(
@@ -50,17 +53,38 @@ class FloorPlanFragment : Fragment() {
     private fun initializeViews(view: View) {
         floorPlanImage = view.findViewById(R.id.floor_plan_image)
         deviceGridOverlay = view.findViewById(R.id.device_grid_overlay)
-        floorName = view.findViewById(R.id.floor_name)
-        floorInfo = view.findViewById(R.id.floor_info)
+        floorSpinner = view.findViewById(R.id.floor_spinner)
+
+        floorSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                if (position in floors.indices) {
+                    viewModel.selectFloor(floors[position].floorId)
+                }
+            }
+
+            override fun onNothingSelected(parent: AdapterView<*>?) = Unit
+        }
     }
 
     private fun observeViewModel() {
+        viewModel.floors.observe(viewLifecycleOwner) { floorList ->
+            floors = floorList
+            val names = floorList.map { it.name }
+            val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, names)
+            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+            floorSpinner.adapter = adapter
+
+            if (floorList.isNotEmpty()) {
+                val selectedIndex = floorList.indexOfFirst { it.floorId == currentFloor?.floorId }.takeIf { it >= 0 } ?: 0
+                floorSpinner.setSelection(selectedIndex, false)
+                viewModel.selectFloor(floorList[selectedIndex].floorId)
+            }
+        }
+
         // Observe current floor
         viewModel.currentFloor.observe(viewLifecycleOwner) { floor ->
             floor?.let {
                 currentFloor = it
-                floorName.text = it.name
-                floorInfo.text = "Grid: ${it.gridWidth}x${it.gridHeight}"
                 AppLogger.d(TAG, "Floor loaded: ${it.name}")
             }
         }

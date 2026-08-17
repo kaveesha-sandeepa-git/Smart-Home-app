@@ -14,8 +14,7 @@ class FloorPlanActivity : AppCompatActivity() {
     private lateinit var toolbar: Toolbar
     private lateinit var floorPlanImage: ImageView
     private lateinit var deviceGridOverlay: GridView
-    private lateinit var floorName: TextView
-    private lateinit var floorInfo: TextView
+    private lateinit var floorSpinner: android.widget.Spinner
     private lateinit var currentFloor: Floor
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -26,8 +25,7 @@ class FloorPlanActivity : AppCompatActivity() {
         toolbar = findViewById(R.id.toolbar)
         floorPlanImage = findViewById(R.id.floor_plan_image)
         deviceGridOverlay = findViewById(R.id.device_grid_overlay)
-        floorName = findViewById(R.id.floor_name)
-        floorInfo = findViewById(R.id.floor_info)
+        floorSpinner = findViewById(R.id.floor_spinner)
 
         setSupportActionBar(toolbar)
         supportActionBar?.title = "Floor Plans"
@@ -39,8 +37,13 @@ class FloorPlanActivity : AppCompatActivity() {
 
     private fun loadSampleFloor() {
         currentFloor = Floor("floor1", "Ground Floor", "Main level", "", 4, 4)
-        floorName.text = currentFloor.name
-        floorInfo.text = "${currentFloor.gridWidth}x${currentFloor.gridHeight} grid"
+        floorSpinner.adapter = android.widget.ArrayAdapter(
+            this,
+            android.R.layout.simple_spinner_item,
+            listOf(currentFloor.name)
+        ).apply {
+            setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        }
         
         // TODO: Set floor plan image
         // floorPlanImage.setImageResource(R.drawable.floor_plan_1)
