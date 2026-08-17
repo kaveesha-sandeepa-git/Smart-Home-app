@@ -1,5 +1,6 @@
 package com.example.smart_home.fragments
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -14,6 +15,7 @@ import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.smart_home.R
+import com.example.smart_home.activities.DeviceControlActivity
 import com.example.smart_home.adapters.DeviceAdapter
 import com.example.smart_home.models.Device
 import com.example.smart_home.models.Floor
@@ -61,7 +63,7 @@ class DashboardFragment : Fragment() {
         deviceGrid.layoutManager = GridLayoutManager(requireContext(), 2)
 
         deviceAdapter = DeviceAdapter(mutableListOf()) { device ->
-            toggleDevice(device)
+            openDeviceControl(device)
         }
         deviceGrid.adapter = deviceAdapter
     }
@@ -131,6 +133,14 @@ class DashboardFragment : Fragment() {
 
             override fun onNothingSelected(parent: AdapterView<*>?) {}
         }
+    }
+
+    private fun openDeviceControl(device: Device) {
+        AppLogger.d(TAG, "Opening control for device: ${device.name}")
+        val intent = Intent(requireContext(), DeviceControlActivity::class.java).apply {
+            putExtra("deviceId", device.deviceId)
+        }
+        startActivity(intent)
     }
 
     private fun toggleDevice(device: Device) {

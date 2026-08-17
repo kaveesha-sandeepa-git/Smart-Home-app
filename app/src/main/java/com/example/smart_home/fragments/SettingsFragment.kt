@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.widget.SwitchCompat
@@ -12,6 +13,7 @@ import androidx.fragment.app.viewModels
 import com.example.smart_home.R
 import com.example.smart_home.utils.AppLogger
 import com.example.smart_home.utils.PreferencesManager
+import com.example.smart_home.viewmodels.AuthViewModel
 import com.example.smart_home.viewmodels.SettingsViewModel
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -23,6 +25,7 @@ import java.util.Locale
 class SettingsFragment : Fragment() {
 
     private val viewModel: SettingsViewModel by viewModels()
+    private val authViewModel: AuthViewModel by viewModels()
     private lateinit var preferencesManager: PreferencesManager
 
     private lateinit var notificationsToggle: SwitchCompat
@@ -31,6 +34,7 @@ class SettingsFragment : Fragment() {
     private lateinit var darkModeToggle: SwitchCompat
     private lateinit var firebaseStatus: TextView
     private lateinit var lastSyncTime: TextView
+    private lateinit var btnLogout: Button
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -59,6 +63,7 @@ class SettingsFragment : Fragment() {
         darkModeToggle = view.findViewById(R.id.dark_mode_toggle)
         firebaseStatus = view.findViewById(R.id.firebase_status)
         lastSyncTime = view.findViewById(R.id.last_sync_time)
+        btnLogout = view.findViewById(R.id.btn_logout)
     }
 
     private fun loadPreferences() {
@@ -98,9 +103,20 @@ class SettingsFragment : Fragment() {
                 Toast.makeText(requireContext(), alert, Toast.LENGTH_LONG).show()
             }
         }
+
+        authViewModel.userLiveData.observe(viewLifecycleOwner) { user ->
+            if (user == null) {
+                startActivity(android.content.Intent(requireContext(), com.example.smart_home.activities.LoginActivity::class.java))
+                requireActivity().finish()
+            }
+        }
     }
 
     private fun setupListeners() {
+        btnLogout.setOnClickListener {
+            authViewModel.logout()
+        }
+
         notificationsToggle.setOnCheckedChangeListener { _, isChecked ->
             preferencesManager.notificationsEnabled = isChecked
             AppLogger.d(TAG, "Notifications: ${if (isChecked) "Enabled" else "Disabled"}")

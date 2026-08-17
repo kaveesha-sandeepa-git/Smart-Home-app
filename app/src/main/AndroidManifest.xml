@@ -29,6 +29,7 @@
         <activity android:name=".activities.FloorPlanActivity" />
         <activity android:name=".activities.ReportingActivity" />
         <activity android:name=".activities.DeviceControlActivity" />
+        <activity android:name=".activities.LoginActivity" />
 
         <service
             android:name=".services.NotificationService"

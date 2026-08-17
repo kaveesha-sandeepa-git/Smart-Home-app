@@ -365,6 +365,44 @@
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
 
+            <!-- Camera Video Card -->
+            <androidx.cardview.widget.CardView
+                android:id="@+id/card_camera"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="12dp"
+                app:cardCornerRadius="8dp"
+                app:cardElevation="2dp"
+                app:cardBackgroundColor="@color/background_secondary"
+                android:visibility="gone">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="14dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="LIVE STREAM"
+                        android:textSize="11sp"
+                        android:textStyle="bold"
+                        android:letterSpacing="0.05"
+                        android:textColor="@color/text_secondary"
+                        android:layout_marginBottom="12dp" />
+
+                    <androidx.media3.ui.PlayerView
+                        android:id="@+id/player_view"
+                        android:layout_width="match_parent"
+                        android:layout_height="220dp"
+                        android:background="@color/black"
+                        app:use_controller="true"
+                        app:resize_mode="fit" />
+
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
             <!-- Usage Stats Card -->
             <androidx.cardview.widget.CardView
                 android:id="@+id/card_usage_stats"

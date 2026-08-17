@@ -5,13 +5,22 @@ import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import androidx.activity.viewModels
 import androidx.cardview.widget.CardView
+import androidx.media3.common.MediaItem
+import androidx.media3.datasource.DefaultHttpDataSource
+import androidx.media3.exoplayer.ExoPlayer
+import androidx.media3.exoplayer.hls.HlsMediaSource
+import androidx.media3.ui.PlayerView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.smart_home.R
 import com.example.smart_home.models.Device
-import com.example.smart_home.models.Light
+import com.example.smart_home.models.SecurityCamera
+import com.example.smart_home.viewmodels.DeviceControlViewModel
 
 class DeviceControlActivity : AppCompatActivity() {
+
+    private val viewModel: DeviceControlViewModel by viewModels()
 
     private lateinit var toolbar: Toolbar
     private lateinit var deviceIcon: ImageView
@@ -32,8 +41,11 @@ class DeviceControlActivity : AppCompatActivity() {
     private lateinit var cardMaxDuration: CardView
     private lateinit var cardMultiSwitch: CardView
     private lateinit var cardUsageStats: CardView
+    private lateinit var cardCamera: CardView
+    private lateinit var playerView: PlayerView
 
     private lateinit var currentDevice: Device
+    private var exoPlayer: ExoPlayer? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -59,30 +71,38 @@ class DeviceControlActivity : AppCompatActivity() {
         cardMaxDuration = findViewById(R.id.card_max_duration)
         cardMultiSwitch = findViewById(R.id.card_multi_switch)
         cardUsageStats = findViewById(R.id.card_usage_stats)
+        cardCamera = findViewById(R.id.card_camera)
+        playerView = findViewById(R.id.player_view)
 
         setSupportActionBar(toolbar)
         supportActionBar?.title = "Device Control"
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
-        // Load sample device
-        loadSampleDevice()
+        // Load device from intent
+        intent.getStringExtra("deviceId")?.let { deviceId ->
+            viewModel.loadDevice(deviceId)
+        }
+
+        setupObservers()
         setupListeners()
     }
 
-    private fun loadSampleDevice() {
-        currentDevice = Light("light1", "Living Room Light", "ON", "floor1", 1, 0)
-        updateUI()
+    private fun setupObservers() {
+        viewModel.currentDevice.observe(this) { device ->
+            device?.let {
+                currentDevice = it
+                updateUI()
+            }
+        }
     }
 
     private fun setupListeners() {
         btnTurnOn.setOnClickListener {
-            currentDevice.status = "ON"
-            updateUI()
+            viewModel.turnDeviceOn()
         }
 
         btnTurnOff.setOnClickListener {
-            currentDevice.status = "OFF"
-            updateUI()
+            viewModel.turnDeviceOff()
         }
 
         brightnessSlider.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
@@ -116,26 +136,78 @@ class DeviceControlActivity : AppCompatActivity() {
                 cardScheduling.visibility = View.VISIBLE
                 cardMaxDuration.visibility = View.GONE
                 cardMultiSwitch.visibility = View.GONE
+                cardCamera.visibility = View.GONE
             }
             "IRON" -> {
                 cardBrightness.visibility = View.GONE
                 cardScheduling.visibility = View.GONE
                 cardMaxDuration.visibility = View.VISIBLE
                 cardMultiSwitch.visibility = View.GONE
+                cardCamera.visibility = View.GONE
             }
             "MULTI_SWITCH" -> {
                 cardBrightness.visibility = View.GONE
                 cardScheduling.visibility = View.GONE
                 cardMaxDuration.visibility = View.GONE
                 cardMultiSwitch.visibility = View.VISIBLE
+                cardCamera.visibility = View.GONE
+            }
+            "CAMERA" -> {
+                cardBrightness.visibility = View.GONE
+                cardScheduling.visibility = View.GONE
+                cardMaxDuration.visibility = View.GONE
+                cardMultiSwitch.visibility = View.GONE
+                cardCamera.visibility = View.VISIBLE
+                initializePlayer()
             }
             else -> {
                 cardBrightness.visibility = View.GONE
                 cardScheduling.visibility = View.GONE
                 cardMaxDuration.visibility = View.GONE
                 cardMultiSwitch.visibility = View.GONE
+                cardCamera.visibility = View.GONE
             }
         }
+    }
+
+    @androidx.annotation.OptIn(androidx.media3.common.util.UnstableApi::class)
+    private fun initializePlayer() {
+        val camera = currentDevice as? SecurityCamera ?: return
+        if (camera.streamUrl.isEmpty()) return
+
+        if (exoPlayer == null) {
+            exoPlayer = ExoPlayer.Builder(this).build()
+            playerView.player = exoPlayer
+        }
+
+        val mediaItem = MediaItem.fromUri(camera.streamUrl)
+        
+        // Use HLS media source if the URL ends with .m3u8
+        val mediaSource = if (camera.streamUrl.contains(".m3u8")) {
+            HlsMediaSource.Factory(DefaultHttpDataSource.Factory())
+                .createMediaSource(mediaItem)
+        } else {
+            null // Let ExoPlayer handle standard formats
+        }
+
+        if (mediaSource != null) {
+            exoPlayer?.setMediaSource(mediaSource)
+        } else {
+            exoPlayer?.setMediaItem(mediaItem)
+        }
+
+        exoPlayer?.prepare()
+        exoPlayer?.playWhenReady = true
+    }
+
+    override fun onStop() {
+        super.onStop()
+        releasePlayer()
+    }
+
+    private fun releasePlayer() {
+        exoPlayer?.release()
+        exoPlayer = null
     }
 
     override fun onSupportNavigateUp(): Boolean {

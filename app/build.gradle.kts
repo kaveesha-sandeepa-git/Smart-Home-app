@@ -43,6 +43,10 @@ dependencies {
     implementation(libs.firebase.firestore)
     implementation(libs.firebase.database)
     implementation(libs.firebase.messaging)
+    implementation(libs.firebase.auth)
+    implementation(libs.androidx.media3.exoplayer)
+    implementation(libs.androidx.media3.ui)
+    implementation(libs.androidx.media3.hls)
     implementation(libs.material)
 
     // Room

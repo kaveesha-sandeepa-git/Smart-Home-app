@@ -2,20 +2,31 @@ package com.example.smart_home.activities
 
 import android.content.Intent
 import android.os.Bundle
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import com.example.smart_home.R
 import com.example.smart_home.fragments.DashboardFragment
 import com.example.smart_home.fragments.SettingsFragment
+import com.example.smart_home.viewmodels.AuthViewModel
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var bottomNav: BottomNavigationView
     private lateinit var toolbar: Toolbar
+    private val authViewModel: AuthViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        
+        // Check authentication
+        if (authViewModel.userLiveData.value == null) {
+            startActivity(Intent(this, LoginActivity::class.java))
+            finish()
+            return
+        }
+
         setContentView(R.layout.activity_main)
 
         toolbar = findViewById(R.id.toolbar)
